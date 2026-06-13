@@ -18,6 +18,8 @@ import { DevelopersModule } from './modules/developers/developers.module';
 import { TicketsModule } from './modules/tickets/tickets.module';
 import { GitReposModule } from './modules/git-repos/git-repos.module';
 import { AuditLogsModule } from './modules/audit-logs/audit-logs.module';
+import { ForecastModule } from './modules/forecast/forecast.module';
+import { AllocationsModule } from './modules/allocations/allocations.module';
 
 import { HealthController } from './common/health/health.controller';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
@@ -45,6 +47,8 @@ import { PermissionsGuard } from './common/guards/permissions.guard';
     TicketsModule,
     GitReposModule,
     AuditLogsModule,
+    ForecastModule,
+    AllocationsModule,
   ],
   controllers: [HealthController],
   providers: [
