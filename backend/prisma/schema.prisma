@@ -1,5 +1,5 @@
-// SmarterSprint — Prisma Schema
-// PostgreSQL · multi-tenant ready · auditable
+// SmarterSprint — Phase 0 multi-tenant schema
+// Every tenant-scoped table carries tenantId; queries MUST be scoped via TenantGuard.
 
 generator client {
   provider = "prisma-client-js"
@@ -10,308 +10,357 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ─────────────── Enums ───────────────
+// ─────────────── Enums
 
-enum Role {
-  ADMIN
-  CTO
-  CFO
-  CEO
-  ENGINEERING_MANAGER
-  USER
-}
-
-enum UserStatus {
-  ACTIVE
-  INVITED
-  SUSPENDED
-  DISABLED
-}
-
-enum ProjectStatus {
-  PLANNING
-  ACTIVE
-  PAUSED
-  COMPLETED
-  ARCHIVED
-}
-
-enum RepoProvider {
-  GITHUB
-  GITLAB
-  BITBUCKET
+enum Plan {
+  FREE
+  STARTER
+  ENTERPRISE
 }
 
 enum CostBand {
-  JUNIOR
-  MID
-  SENIOR
-  LEAD
-  STAFF
-  PRINCIPAL
+  C1
+  C2
+  C3
+  C4
+  C5
 }
 
-enum ScenarioCategory {
-  BASELINE
-  AGGRESSIVE
-  CONSERVATIVE
-  RISK_ADJUSTED
-  CUSTOM
+enum AiCacheType {
+  INGESTION_JIRA
+  INGESTION_GIT
+  INGESTION_HRMS
+  DEBATE
 }
 
-enum RiskSeverity {
-  LOW
-  MEDIUM
-  HIGH
-  CRITICAL
-}
-
-enum AuditAction {
-  CREATE
-  UPDATE
-  DELETE
-  LOGIN
-  LOGOUT
-  RUN_FORECAST
-  RUN_DEBATE
-  GENERATE_REPORT
-}
-
-enum AIProviderKind {
-  GEMINI
-  OPENAI
-  ANTHROPIC
-  LOCAL
-}
-
-// ─────────────── Core ───────────────
+// ─────────────── Global
 
 model User {
-  id           String      @id @default(uuid())
-  email        String      @unique
-  password     String
-  firstName    String?
-  lastName     String?
-  role         Role        @default(USER)
-  status       UserStatus  @default(ACTIVE)
-  lastLoginAt  DateTime?
-  refreshToken String?
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  firstName    String?  @map("first_name")
+  lastName     String?  @map("last_name")
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
-  auditLogs    AuditLog[]
-  reports      Report[]
+  memberships   TenantMembership[]
+  refreshTokens RefreshToken[]
+  auditLogs     AuditLog[]
+
+  @@map("users")
 }
 
-model Project {
-  id           String         @id @default(uuid())
+model Permission {
+  id          String   @id @default(cuid())
+  action      String   @unique
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  rolePermissions RolePermission[]
+
+  @@map("permissions")
+}
+
+// ─────────────── Tenant
+
+model Tenant {
+  id           String   @id @default(cuid())
   name         String
-  description  String?
-  status       ProjectStatus  @default(PLANNING)
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  slug         String   @unique
+  brandName    String   @map("brand_name")
+  logoUrl      String?  @map("logo_url")
+  primaryColor String   @default("#2563EB") @map("primary_color")
+  plan         Plan     @default(FREE)
+  settings     Json     @default("{}")
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
-  repositories Repository[]
-  sprints      Sprint[]
-  scenarios    Scenario[]
+  memberships       TenantMembership[]
+  roles             Role[]
+  refreshTokens     RefreshToken[]
+  developers        Developer[]
+  pseudonymMaps     PseudonymMap[]
+  jiraTickets       JiraTicket[]
+  gitRepositories   GitRepository[]
+  scenarios         Scenario[]
+  multiplierConfigs MultiplierConfig[]
+  allocations       Allocation[]
+  aiCaches          AiCache[]
+  debateResults     DebateResult[]
+  forecastResults   ForecastResult[]
+  auditLogs         AuditLog[]
+
+  @@map("tenants")
 }
 
-model Repository {
-  id         String       @id @default(uuid())
-  projectId  String
-  provider   RepoProvider
-  url        String
-  externalId String?
-  createdAt  DateTime     @default(now())
+model TenantMembership {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  tenantId  String   @map("tenant_id")
+  roleId    String   @map("role_id")
+  isActive  Boolean  @default(true) @map("is_active")
+  joinedAt  DateTime @default(now()) @map("joined_at")
 
-  project    Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Restrict)
 
-  @@index([projectId])
+  @@unique([userId, tenantId])
+  @@index([tenantId])
+  @@index([userId])
+  @@index([roleId])
+  @@map("tenant_memberships")
 }
 
-model Sprint {
-  id        String   @id @default(uuid())
-  projectId String
-  name      String
-  startDate DateTime
-  endDate   DateTime
-  velocity  Float    @default(0)
-  createdAt DateTime @default(now())
+model Role {
+  id          String   @id @default(cuid())
+  tenantId    String   @map("tenant_id")
+  name        String
+  description String?
+  isSystem    Boolean  @default(false) @map("is_system")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
-  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tenant      Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  permissions RolePermission[]
+  memberships TenantMembership[]
 
-  @@index([projectId])
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@map("roles")
 }
+
+model RolePermission {
+  roleId       String @map("role_id")
+  permissionId String @map("permission_id")
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@unique([roleId, permissionId])
+  @@index([roleId])
+  @@index([permissionId])
+  @@map("role_permissions")
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  tenantId  String   @map("tenant_id")
+  tokenHash String   @map("token_hash")
+  expiresAt DateTime @map("expires_at")
+  isRevoked Boolean  @default(false) @map("is_revoked")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([userId])
+  @@index([tokenHash])
+  @@map("refresh_tokens")
+}
+
+// ─────────────── Tenant-scoped data
 
 model Developer {
-  id         String        @id @default(uuid())
-  pseudonym  String        @unique
-  department String
-  costBand   CostBand
-  hourlyRate Float
-  capacity   Float         @default(1.0)
-  createdAt  DateTime      @default(now())
+  id                String   @id @default(cuid())
+  tenantId          String   @map("tenant_id")
+  pseudonym         String
+  role              String
+  department        String
+  tenureYears       Float    @map("tenure_years")
+  costBand          CostBand @map("cost_band")
+  skills            Json     @default("[]")
+  currentAllocation Json     @default("{}") @map("current_allocation")
+  isActive          Boolean  @default(true) @map("is_active")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
 
-  skills     DeveloperSkill[]
-  allocations Allocation[]
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, pseudonym])
+  @@index([tenantId])
+  @@map("developers")
 }
 
-model Skill {
-  id        String           @id @default(uuid())
-  name      String           @unique
-  category  String?
-  createdAt DateTime         @default(now())
+model PseudonymMap {
+  id        String   @id @default(cuid())
+  tenantId  String   @map("tenant_id")
+  pseudonym String
+  realName  String   @map("real_name")
+  email     String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  developers DeveloperSkill[]
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, pseudonym])
+  @@index([tenantId])
+  @@map("pseudonym_maps")
 }
 
-model DeveloperSkill {
-  developerId String
-  skillId     String
-  proficiency Int      @default(3) // 1-5
+model JiraTicket {
+  id                 String   @id @default(cuid())
+  tenantId           String   @map("tenant_id")
+  externalId         String   @map("external_id")
+  title              String
+  estimatedPoints    Int      @map("estimated_points")
+  actualPoints       Int      @map("actual_points")
+  assigneePseudonym  String   @map("assignee_pseudonym")
+  labels             String[]
+  sprint             String
+  status             String
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
 
-  developer   Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
-  skill       Skill     @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
-  @@id([developerId, skillId])
+  @@unique([tenantId, externalId])
+  @@index([tenantId])
+  @@index([tenantId, sprint])
+  @@map("jira_tickets")
+}
+
+model GitRepository {
+  id             String   @id @default(cuid())
+  tenantId       String   @map("tenant_id")
+  name           String
+  defaultBranch  String   @map("default_branch")
+  language       String
+  framework      String
+  metadata       Json     @default("{}")
+  staticAnalysis Json     @default("{}") @map("static_analysis")
+  dependencies   Json     @default("{}")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@map("git_repositories")
 }
 
 model Scenario {
-  id          String            @id @default(uuid())
-  projectId   String
-  name        String
-  category    ScenarioCategory  @default(BASELINE)
-  assumptions Json
-  createdBy   String?
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
+  id                String   @id @default(cuid())
+  tenantId          String   @map("tenant_id")
+  externalId        String   @map("external_id")
+  name              String
+  description       String
+  category          String
+  baseEffortPoints  Int      @map("base_effort_points")
+  config            Json     @default("{}")
+  isActive          Boolean  @default(true) @map("is_active")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
 
-  project     Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  allocations Allocation[]
-  forecasts   Forecast[]
-  debates     Debate[]
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
-  @@index([projectId])
+  @@unique([tenantId, externalId])
+  @@index([tenantId])
+  @@map("scenarios")
+}
+
+model MultiplierConfig {
+  id        String   @id @default(cuid())
+  tenantId  String   @map("tenant_id")
+  version   String
+  config    Json
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, version])
+  @@index([tenantId])
+  @@map("multiplier_configs")
 }
 
 model Allocation {
-  id                 String   @id @default(uuid())
-  developerId        String
-  scenarioId         String
-  allocationPercent  Float
-  startDate          DateTime
-  endDate            DateTime
-  notes              String?
-  createdAt          DateTime @default(now())
+  id                  String   @id @default(cuid())
+  tenantId            String   @map("tenant_id")
+  devPseudonym        String   @map("dev_pseudonym")
+  scenarioExternalId  String   @map("scenario_external_id")
+  allocationPercent   Int      @map("allocation_percent")
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
 
-  developer Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
-  scenario  Scenario  @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
-  @@index([scenarioId])
-  @@index([developerId])
+  @@unique([tenantId, devPseudonym, scenarioExternalId])
+  @@index([tenantId])
+  @@map("allocations")
 }
 
-model Forecast {
-  id               String   @id @default(uuid())
-  scenarioId       String
-  timelineDays     Int
-  cost             Float
-  riskAdjustedCost Float
-  confidence       Float
-  breakdown        Json
-  createdAt        DateTime @default(now())
+model AiCache {
+  id        String      @id @default(cuid())
+  tenantId  String      @map("tenant_id")
+  cacheKey  String      @map("cache_key")
+  cacheType AiCacheType @map("cache_type")
+  data      Json
+  expiresAt DateTime    @map("expires_at")
+  createdAt DateTime    @default(now()) @map("created_at")
 
-  scenario Scenario @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
-  @@index([scenarioId])
+  @@unique([tenantId, cacheKey])
+  @@index([tenantId])
+  @@index([tenantId, cacheKey, expiresAt])
+  @@map("ai_cache")
 }
 
-model Debate {
-  id              String   @id @default(uuid())
-  scenarioId      String
-  confidenceScore Float
-  frictionFactor  Float
-  summary         String
-  transcript      Json
-  createdAt       DateTime @default(now())
+model DebateResult {
+  id                 String   @id @default(cuid())
+  tenantId           String   @map("tenant_id")
+  scenarioExternalId String   @map("scenario_external_id")
+  frictionFactor     Float    @map("friction_factor")
+  confidenceScore    Float    @map("confidence_score")
+  keyRisks           Json     @map("key_risks")
+  debateLog          Json     @map("debate_log")
+  isFixture          Boolean  @default(false) @map("is_fixture")
+  createdAt          DateTime @default(now()) @map("created_at")
 
-  scenario Scenario @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
-  risks    Risk[]
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
-  @@index([scenarioId])
+  @@index([tenantId])
+  @@map("debate_results")
 }
 
-model Risk {
-  id          String        @id @default(uuid())
-  debateId    String
-  title       String
-  description String
-  severity    RiskSeverity
-  likelihood  Float
-  impact      Float
-  mitigation  String?
-  createdAt   DateTime      @default(now())
+model ForecastResult {
+  id                 String   @id @default(cuid())
+  tenantId           String   @map("tenant_id")
+  scenarioExternalId String   @map("scenario_external_id")
+  parameters         Json
+  result             Json
+  createdAt          DateTime @default(now()) @map("created_at")
 
-  debate Debate @relation(fields: [debateId], references: [id], onDelete: Cascade)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
-  @@index([debateId])
+  @@index([tenantId])
+  @@map("forecast_results")
 }
 
 model AuditLog {
-  id          String      @id @default(uuid())
-  action      AuditAction
-  entity      String
-  entityId    String?
-  performedBy String?
-  payload     Json?
-  ip          String?
-  userAgent   String?
-  timestamp   DateTime    @default(now())
+  id            String   @id @default(cuid())
+  tenantId      String   @map("tenant_id")
+  userId        String?  @map("user_id")
+  action        String
+  resource      String
+  details       Json     @default("{}")
+  piiSanitised  Boolean  @default(true) @map("pii_sanitised")
+  ipAddress     String?  @map("ip_address")
+  createdAt     DateTime @default(now()) @map("created_at")
 
-  user User? @relation(fields: [performedBy], references: [id], onDelete: SetNull)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
 
-  @@index([entity, entityId])
-  @@index([performedBy])
-  @@index([timestamp])
-}
-
-model Report {
-  id         String   @id @default(uuid())
-  title      String
-  kind       String
-  payload    Json
-  generatedBy String?
-  createdAt  DateTime @default(now())
-
-  user User? @relation(fields: [generatedBy], references: [id], onDelete: SetNull)
-}
-
-// ─────────────── AI ───────────────
-
-model AIRequest {
-  id        String         @id @default(uuid())
-  provider  AIProviderKind
-  model     String
-  purpose   String
-  prompt    String
-  metadata  Json?
-  createdAt DateTime       @default(now())
-
-  responses AIResponse[]
-}
-
-model AIResponse {
-  id           String   @id @default(uuid())
-  requestId    String
-  output       String
-  latencyMs    Int
-  inputTokens  Int?
-  outputTokens Int?
-  finishReason String?
-  metadata     Json?
-  createdAt    DateTime @default(now())
-
-  request AIRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
-
-  @@index([requestId])
+  @@index([tenantId])
+  @@index([tenantId, createdAt])
+  @@index([userId])
+  @@map("audit_logs")
 }

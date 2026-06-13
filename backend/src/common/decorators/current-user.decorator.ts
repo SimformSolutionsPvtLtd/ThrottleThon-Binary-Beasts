@@ -1,15 +1,9 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { Role } from '../constants/roles.enum';
-
-export interface AuthUser {
-  id: string;
-  email: string;
-  role: Role;
-}
+import { AuthUser } from '../types/auth-user';
 
 export const CurrentUser = createParamDecorator(
   (_: unknown, ctx: ExecutionContext): AuthUser => {
     const req = ctx.switchToHttp().getRequest();
-    return req.user;
+    return req.user as AuthUser;
   },
 );

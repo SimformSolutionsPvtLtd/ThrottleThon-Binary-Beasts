@@ -1,0 +1,41 @@
+export const Permissions = {
+  FORECAST_READ: 'forecast:read',
+  FORECAST_WRITE: 'forecast:write',
+  DEBATE_RUN: 'debate:run',
+  DEBATE_READ: 'debate:read',
+  IDENTITY_MAP_READ: 'identity-map:read',
+  ALLOCATIONS_READ: 'allocations:read',
+  ALLOCATIONS_WRITE: 'allocations:write',
+  BRIEF_GENERATE: 'brief:generate',
+  DEVELOPERS_READ: 'developers:read',
+  DEVELOPERS_WRITE: 'developers:write',
+  SCENARIOS_READ: 'scenarios:read',
+  SCENARIOS_WRITE: 'scenarios:write',
+  TENANT_MANAGE: 'tenant:manage',
+  USERS_MANAGE: 'users:manage',
+  AUDIT_READ: 'audit:read',
+  INGESTION_TRIGGER: 'ingestion:trigger',
+  INGESTION_READ: 'ingestion:read',
+} as const;
+
+export type PermissionAction = (typeof Permissions)[keyof typeof Permissions];
+
+export const ALL_PERMISSIONS: { action: PermissionAction; description: string }[] = [
+  { action: Permissions.FORECAST_READ, description: 'Read forecast results' },
+  { action: Permissions.FORECAST_WRITE, description: 'Create/update forecasts' },
+  { action: Permissions.DEBATE_RUN, description: 'Trigger debate orchestration' },
+  { action: Permissions.DEBATE_READ, description: 'Read debate transcripts and results' },
+  { action: Permissions.IDENTITY_MAP_READ, description: 'Read pseudonym → identity map' },
+  { action: Permissions.ALLOCATIONS_READ, description: 'Read developer allocations' },
+  { action: Permissions.ALLOCATIONS_WRITE, description: 'Create/update allocations' },
+  { action: Permissions.BRIEF_GENERATE, description: 'Generate executive briefs' },
+  { action: Permissions.DEVELOPERS_READ, description: 'Read developer roster' },
+  { action: Permissions.DEVELOPERS_WRITE, description: 'Create/update developers' },
+  { action: Permissions.SCENARIOS_READ, description: 'Read scenarios' },
+  { action: Permissions.SCENARIOS_WRITE, description: 'Create/update scenarios' },
+  { action: Permissions.TENANT_MANAGE, description: 'Manage tenant settings + branding' },
+  { action: Permissions.USERS_MANAGE, description: 'Manage tenant users and roles' },
+  { action: Permissions.AUDIT_READ, description: 'Read audit logs' },
+  { action: Permissions.INGESTION_TRIGGER, description: 'Trigger data ingestion jobs' },
+  { action: Permissions.INGESTION_READ, description: 'Read ingestion status and results' },
+];

@@ -3,13 +3,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../../core/services/api.service';
-
-interface Scenario {
-  id: string;
-  name: string;
-  category: string;
-  createdAt: string;
-}
+import { Scenario } from '../../core/models/scenario.model';
 
 @Component({
   selector: 'ss-scenarios',
@@ -29,10 +23,6 @@ interface Scenario {
         <th mat-header-cell *matHeaderCellDef>Category</th>
         <td mat-cell *matCellDef="let r">{{ r.category }}</td>
       </ng-container>
-      <ng-container matColumnDef="createdAt">
-        <th mat-header-cell *matHeaderCellDef>Created</th>
-        <td mat-cell *matCellDef="let r">{{ r.createdAt | date }}</td>
-      </ng-container>
       <tr mat-header-row *matHeaderRowDef="cols"></tr>
       <tr mat-row *matRowDef="let row; columns: cols"></tr>
     </table>
@@ -41,14 +31,14 @@ interface Scenario {
 export class ScenariosComponent implements OnInit {
   private readonly api = inject(ApiService);
   readonly rows = signal<Scenario[]>([]);
-  readonly cols = ['name', 'category', 'createdAt'];
+  readonly cols = ['name', 'category'];
 
   ngOnInit(): void {
     this.refresh();
   }
 
   async refresh(): Promise<void> {
-    const res = await firstValueFrom(this.api.get<{ data: Scenario[] }>('/scenarios'));
-    this.rows.set(res.data);
+    const rows = await firstValueFrom(this.api.getScenarios());
+    this.rows.set(rows);
   }
 }

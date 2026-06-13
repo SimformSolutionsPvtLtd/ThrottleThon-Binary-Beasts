@@ -2,14 +2,119 @@
 @tailwind components;
 @tailwind utilities;
 
-@import '@angular/material/prebuilt-themes/azure-blue.css';
-
-html,
-body {
-  height: 100%;
+:root {
+  --brand-primary: #2563EB;
+  --brand-secondary: #1E40AF;
+  --brand-accent: #3B82F6;
+  --surface: #0F172A;
+  --surface-raised: #1E293B;
+  --surface-overlay: #334155;
+  --content: #E2E8F0;
+  --content-muted: #94A3B8;
+  --content-accent: #60A5FA;
 }
-body {
-  margin: 0;
+
+html, body {
+  height: 100%;
+  min-width: 1280px;
+  background-color: var(--surface);
+  color: var(--content);
   font-family: 'Inter', Roboto, sans-serif;
-  background: #f7f8fb;
+  margin: 0;
+}
+
+/* Dark scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--surface);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--surface-overlay);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--content-muted);
+}
+
+/* Angular Material dark theme overrides */
+.mat-mdc-card {
+  background-color: var(--surface-raised) !important;
+  color: var(--content) !important;
+}
+
+.mat-mdc-dialog-container {
+  background-color: var(--surface-raised) !important;
+  color: var(--content) !important;
+}
+
+.mat-mdc-snack-bar-container {
+  --mdc-snackbar-container-color: var(--surface-overlay);
+  --mdc-snackbar-supporting-text-color: var(--content);
+}
+
+.mat-mdc-form-field {
+  --mdc-filled-text-field-container-color: var(--surface-overlay);
+  --mdc-filled-text-field-label-text-color: var(--content-muted);
+  --mdc-filled-text-field-input-text-color: var(--content);
+}
+
+.mat-mdc-table {
+  background-color: var(--surface-raised) !important;
+  color: var(--content) !important;
+}
+
+.mat-mdc-row, .mat-mdc-header-row {
+  background-color: transparent !important;
+}
+
+.mat-mdc-header-cell {
+  color: var(--content-muted) !important;
+  border-bottom-color: var(--surface-overlay) !important;
+}
+
+.mat-mdc-cell {
+  color: var(--content) !important;
+  border-bottom-color: var(--surface-overlay) !important;
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+    min-width: unset;
+  }
+}
+
+/* Shimmer animation for loading states */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--surface-raised) 25%,
+    var(--surface-overlay) 50%,
+    var(--surface-raised) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Pulse animation */
+@keyframes pulse-scale {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.pulse-agent {
+  animation: pulse-scale 1.5s ease-in-out infinite;
 }
