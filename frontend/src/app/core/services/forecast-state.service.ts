@@ -2,6 +2,8 @@ import { Injectable, signal, computed } from '@angular/core';
 import { ForecastResult, WinnerInfo } from '../models/forecast.model';
 import { Scenario } from '../models/scenario.model';
 import { Developer, Allocation } from '../models/developer.model';
+import { DataStatus } from '../models/data-status.model';
+import { DebateResult, DebateProgress } from '../models/debate.model';
 
 @Injectable({ providedIn: 'root' })
 export class ForecastStateService {
@@ -27,6 +29,17 @@ export class ForecastStateService {
   readonly forecastResults = signal<ForecastResult[]>([]);
   readonly winner = signal<WinnerInfo | null>(null);
   readonly isForecastLoading = signal<boolean>(false);
+
+  // Data source status (Git/Jira/HRMS)
+  readonly dataStatus = signal<DataStatus | null>(null);
+
+  // AI debate
+  readonly debateResults = signal<Map<string, DebateResult>>(new Map());
+  readonly debateProgress = signal<DebateProgress | null>(null);
+  readonly isDebateLoading = signal<boolean>(false);
+
+  // Ingestion
+  readonly isIngestionLoading = signal<boolean>(false);
 
   // Identity / display
   readonly showRealNames = signal<boolean>(false);

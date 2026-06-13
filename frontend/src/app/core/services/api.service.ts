@@ -1,5 +1,6 @@
 import { Injectable, inject, InjectionToken } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { skipErrorToast } from '../interceptors/http-context';
 import { Observable } from 'rxjs';
 import { LoginRequest, LoginResponse, User } from '../models/auth.model';
 import { TenantBranding, TenantMembership } from '../models/tenant.model';
@@ -136,7 +137,11 @@ export class ApiService {
   }
 
   getDebateResult(scenarioExternalId: string): Observable<DebateResult> {
-    return this.http.get<DebateResult>(this.url(`/api/v1/debate/${scenarioExternalId}`));
+    // A missing debate (404) is an expected outcome when probing, so suppress
+    // the global error toast and let the caller handle the empty state.
+    return this.http.get<DebateResult>(this.url(`/api/v1/debate/${scenarioExternalId}`), {
+      context: skipErrorToast(),
+    });
   }
 
   // Identity Map

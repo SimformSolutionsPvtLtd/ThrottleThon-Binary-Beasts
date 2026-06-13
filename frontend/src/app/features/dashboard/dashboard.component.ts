@@ -2,12 +2,17 @@ import { Component, inject, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ApiService } from '../../core/services/api.service';
 import { ForecastStateService } from '../../core/services/forecast-state.service';
 import { ParameterSlidersComponent } from './components/parameter-sliders/parameter-sliders.component';
 import { ScenarioCardComponent } from './components/scenario-card/scenario-card.component';
 import { FinancialChartComponent } from './components/financial-chart/financial-chart.component';
+import { DataStatusBarComponent } from './components/data-status-bar/data-status-bar.component';
+import { DebateLoadingComponent } from './components/debate-loading/debate-loading.component';
+import { DebateTimelineComponent } from '../debate/debate-timeline/debate-timeline.component';
 
 @Component({
   selector: 'ss-dashboard',
@@ -16,13 +21,23 @@ import { FinancialChartComponent } from './components/financial-chart/financial-
     CommonModule,
     MatChipsModule,
     MatIconModule,
+    MatButtonModule,
     MatTooltipModule,
     ParameterSlidersComponent,
     ScenarioCardComponent,
     FinancialChartComponent,
+    DataStatusBarComponent,
+    DebateLoadingComponent,
+    DebateTimelineComponent,
   ],
   template: `
     <div class="space-y-6">
+
+      <!-- Data source status -->
+      <ss-data-status-bar
+        (refresh)="onRefreshSource($event)"
+        (refreshAll)="onRefreshAll()"
+      />
 
       <!-- Header row -->
       <div class="flex items-center justify-between">
@@ -100,6 +115,31 @@ import { FinancialChartComponent } from './components/financial-chart/financial-
       <!-- Financial Chart -->
       <ss-financial-chart />
 
+      <!-- AI Risk Analysis -->
+      <div class="bg-surface-raised rounded-xl p-6">
+        <div class="flex items-center justify-between mb-5 flex-wrap gap-3">
+          <h3 class="text-base font-semibold text-content flex items-center gap-2">
+            <mat-icon class="text-brand-accent">psychology</mat-icon>
+            AI Risk Analysis
+          </h3>
+          <button
+            mat-raised-button
+            class="debate-btn"
+            [disabled]="state.isDebateLoading() || state.activeScenarioIds().length === 0"
+            (click)="runDebate()"
+          >
+            <mat-icon>psychology</mat-icon>
+            Run AI Debate
+          </button>
+        </div>
+
+        @if (state.isDebateLoading()) {
+          <ss-debate-loading />
+        } @else {
+          <ss-debate-timeline [scenarioExternalId]="state.activeScenarioIds()[0]" />
+        }
+      </div>
+
     </div>
   `,
   styles: [`
@@ -118,11 +158,16 @@ import { FinancialChartComponent } from './components/financial-chart/financial-
       border-color: var(--brand-primary) !important;
       color: var(--content) !important;
     }
+    :host ::ng-deep .debate-btn:not([disabled]) {
+      background-color: var(--brand-primary) !important;
+      color: #fff !important;
+    }
   `],
 })
 export class DashboardComponent implements OnInit {
   readonly state = inject(ForecastStateService);
   private readonly api = inject(ApiService);
+  private readonly snackBar = inject(MatSnackBar);
 
   readonly isLoadingScenarios = computed(() => this.state.allScenarios().length === 0);
 
@@ -131,6 +176,11 @@ export class DashboardComponent implements OnInit {
   }
 
   private loadInitialData(): void {
+    this.api.getStatus().subscribe({
+      next: (status) => this.state.dataStatus.set(status),
+      error: () => {},
+    });
+
     this.api.getScenarios().subscribe({
       next: (scenarios) => {
         this.state.allScenarios.set(scenarios);
@@ -147,6 +197,100 @@ export class DashboardComponent implements OnInit {
       next: (allocs) => this.state.allocations.set(allocs),
       error: () => {},
     });
+  }
+
+  // ── AI Debate ───────────────────────────────────────────────────────────────
+
+  runDebate(): void {
+    const ids = this.state.activeScenarioIds();
+    if (!ids.length) return;
+
+    this.state.isDebateLoading.set(true);
+    this.api.runDebate(ids).subscribe({
+      next: (results) => {
+        this.state.debateResults.update(prev => {
+          const next = new Map(prev);
+          for (const r of results) next.set(r.scenarioExternalId, r);
+          return next;
+        });
+        this.state.isDebateLoading.set(false);
+        // Recalculate the forecast so the new debate-derived friction factor
+        // and confidence score flow into the scenario cards and chart.
+        this.recomputeForecast();
+      },
+      error: () => {
+        this.snackBar.open('Debate failed. Using cached data.', 'Dismiss', { duration: 4000 });
+        this.state.isDebateLoading.set(false);
+      },
+    });
+  }
+
+  private recomputeForecast(): void {
+    const ids = this.state.activeScenarioIds();
+    if (!ids.length) return;
+    this.state.isForecastLoading.set(true);
+    this.api.computeForecast({
+      scenarioIds: ids,
+      priorityPressure: this.state.priorityPressure(),
+      scopePercent: this.state.scopePercent(),
+      contingencyBuffer: this.state.contingencyBuffer() / 100,
+      allocations: this.state.allocations(),
+    }).subscribe({
+      next: (res) => {
+        this.state.forecastResults.set(res.results);
+        this.state.winner.set(res.winner);
+        this.state.isForecastLoading.set(false);
+      },
+      error: () => this.state.isForecastLoading.set(false),
+    });
+  }
+
+  // ── Ingestion refresh ─────────────────────────────────────────────────────────
+
+  onRefreshSource(source: string): void {
+    this.state.isIngestionLoading.set(true);
+    this.api.triggerIngestion(source).subscribe({
+      next: () => this.afterIngestion(`${this.sourceLabel(source)} data refreshed`),
+      error: () => {
+        this.snackBar.open(`Failed to refresh ${this.sourceLabel(source)} data.`, 'Dismiss', { duration: 4000 });
+        this.state.isIngestionLoading.set(false);
+      },
+    });
+  }
+
+  onRefreshAll(): void {
+    this.state.isIngestionLoading.set(true);
+    this.api.triggerAllIngestion().subscribe({
+      next: () => this.afterIngestion('All data sources refreshed'),
+      error: () => {
+        this.snackBar.open('Failed to refresh data sources.', 'Dismiss', { duration: 4000 });
+        this.state.isIngestionLoading.set(false);
+      },
+    });
+  }
+
+  /** Re-fetch status (for updated counts) and notify, then clear loading. */
+  private afterIngestion(message: string): void {
+    this.api.getStatus().subscribe({
+      next: (status) => {
+        this.state.dataStatus.set(status);
+        this.snackBar.open(message, 'Dismiss', { duration: 3000 });
+        this.state.isIngestionLoading.set(false);
+      },
+      error: () => {
+        this.snackBar.open(message, 'Dismiss', { duration: 3000 });
+        this.state.isIngestionLoading.set(false);
+      },
+    });
+  }
+
+  private sourceLabel(source: string): string {
+    switch (source) {
+      case 'jira': return 'Jira';
+      case 'git': return 'Git';
+      case 'hrms': return 'HRMS';
+      default: return source;
+    }
   }
 
   onScenarioSelectionChange(selectedIds: string[]): void {
