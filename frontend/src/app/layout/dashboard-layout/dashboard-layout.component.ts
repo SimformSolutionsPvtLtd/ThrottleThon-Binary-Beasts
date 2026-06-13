@@ -9,9 +9,12 @@ import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from '../../core/services/auth.service';
 import { TenantBrandingService } from '../../core/services/tenant-branding.service';
 import { ForecastStateService } from '../../core/services/forecast-state.service';
+import { ApiService } from '../../core/services/api.service';
 
 @Component({
   selector: 'ss-dashboard-layout',
@@ -29,6 +32,7 @@ import { ForecastStateService } from '../../core/services/forecast-state.service
     MatMenuModule,
     MatSlideToggleModule,
     MatTooltipModule,
+    MatProgressSpinnerModule,
   ],
   template: `
     <!-- Viewport warning -->
@@ -121,10 +125,15 @@ import { ForecastStateService } from '../../core/services/forecast-state.service
           @if (auth.hasPermission('identity-map:read')) {
             <div class="flex items-center gap-2 text-sm text-content-muted">
               <span>Real Names</span>
+              @if (loadingIdentityMap()) {
+                <mat-spinner diameter="16"></mat-spinner>
+              }
               <mat-slide-toggle
                 color="primary"
+                [disabled]="loadingIdentityMap()"
                 [checked]="showRealNames()"
                 (change)="onRealNamesToggle($event.checked)"
+                matTooltip="Reveal real names across the app (audited)"
               ></mat-slide-toggle>
             </div>
           }
@@ -157,11 +166,14 @@ export class DashboardLayoutComponent {
   readonly auth = inject(AuthService);
   readonly branding = inject(TenantBrandingService);
   private readonly route = inject(ActivatedRoute);
+  private readonly api = inject(ApiService);
+  private readonly snackBar = inject(MatSnackBar);
 
   readonly forecastState = inject(ForecastStateService);
   readonly collapsed = signal(false);
   readonly showRealNames = this.forecastState.showRealNames;
   readonly viewportTooSmall = signal(window.innerWidth < 1280);
+  readonly loadingIdentityMap = signal(false);
 
   @HostListener('window:resize')
   onResize(): void {
@@ -193,7 +205,34 @@ export class DashboardLayoutComponent {
     return u?.firstName?.[0]?.toUpperCase() ?? '?';
   });
 
-  onRealNamesToggle(_checked: boolean): void {
-    this.forecastState.showRealNames.set(_checked);
+  onRealNamesToggle(checked: boolean): void {
+    if (!checked) {
+      // Keep the map in memory; just stop resolving.
+      this.forecastState.showRealNames.set(false);
+      return;
+    }
+
+    // Toggle ON. Lazy-load the identity map the first time it's requested.
+    const map = this.forecastState.identityMap();
+    const alreadyLoaded = map && Object.keys(map).length > 0;
+    if (alreadyLoaded) {
+      this.forecastState.showRealNames.set(true);
+      return;
+    }
+
+    this.loadingIdentityMap.set(true);
+    this.api.getIdentityMap().subscribe({
+      next: (record) => {
+        this.forecastState.identityMap.set(record ?? {});
+        this.forecastState.showRealNames.set(true);
+        this.loadingIdentityMap.set(false);
+      },
+      error: () => {
+        // Revert the toggle on failure so the UI reflects reality.
+        this.forecastState.showRealNames.set(false);
+        this.loadingIdentityMap.set(false);
+        this.snackBar.open('Could not load real names. You may not have permission.', 'Dismiss', { duration: 4000 });
+      },
+    });
   }
 }
