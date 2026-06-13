@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { BullModule } from '@nestjs/bullmq';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 
 import { validateEnv } from './config/env.validation';
 
@@ -23,6 +24,8 @@ import { AllocationsModule } from './modules/allocations/allocations.module';
 import { AiModule } from './modules/ai/ai.module';
 import { IngestionModule } from './modules/ingestion/ingestion.module';
 import { DebateModule } from './modules/debate/debate.module';
+import { IdentityMapModule } from './modules/identity-map/identity-map.module';
+import { BriefModule } from './modules/brief/brief.module';
 
 import { HealthController } from './common/health/health.controller';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
@@ -31,6 +34,7 @@ import { PermissionsGuard } from './common/guards/permissions.guard';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, validate: validateEnv }),
+    ThrottlerModule.forRoot([{ name: 'default', ttl: 60000, limit: 60 }]),
     BullModule.forRootAsync({
       useFactory: () => ({
         connection: {
@@ -55,11 +59,14 @@ import { PermissionsGuard } from './common/guards/permissions.guard';
     AiModule,
     IngestionModule,
     DebateModule,
+    IdentityMapModule,
+    BriefModule,
   ],
   controllers: [HealthController],
   providers: [
     { provide: APP_GUARD, useClass: JwtAuthGuard },
     { provide: APP_GUARD, useClass: PermissionsGuard },
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
   ],
 })
 export class AppModule {}

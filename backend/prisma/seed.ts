@@ -420,6 +420,35 @@ async function seedVectorFinFixtures(tenantId: string) {
       data: { tenantId, scenarioExternalId: externalId, frictionFactor, confidenceScore, keyRisks, debateLog, isFixture: true },
     });
   }
+
+  // ─── Allocations — representative team assignments for both scenarios ──────
+  // Needed so /brief can show a populated team and compute a forecast.
+  const allocationData: { devPseudonym: string; scenarioExternalId: string; allocationPercent: number }[] = [
+    // angular-migration-full: 8 devs
+    { devPseudonym: 'DEV_01', scenarioExternalId: 'angular-migration-full', allocationPercent: 100 },
+    { devPseudonym: 'DEV_02', scenarioExternalId: 'angular-migration-full', allocationPercent: 80 },
+    { devPseudonym: 'DEV_03', scenarioExternalId: 'angular-migration-full', allocationPercent: 100 },
+    { devPseudonym: 'DEV_04', scenarioExternalId: 'angular-migration-full', allocationPercent: 60 },
+    { devPseudonym: 'DEV_05', scenarioExternalId: 'angular-migration-full', allocationPercent: 80 },
+    { devPseudonym: 'DEV_07', scenarioExternalId: 'angular-migration-full', allocationPercent: 100 },
+    { devPseudonym: 'DEV_09', scenarioExternalId: 'angular-migration-full', allocationPercent: 60 },
+    { devPseudonym: 'DEV_11', scenarioExternalId: 'angular-migration-full', allocationPercent: 50 },
+    // angular-migration-interim: 6 devs (different mix)
+    { devPseudonym: 'DEV_01', scenarioExternalId: 'angular-migration-interim', allocationPercent: 50 },
+    { devPseudonym: 'DEV_03', scenarioExternalId: 'angular-migration-interim', allocationPercent: 50 },
+    { devPseudonym: 'DEV_06', scenarioExternalId: 'angular-migration-interim', allocationPercent: 80 },
+    { devPseudonym: 'DEV_08', scenarioExternalId: 'angular-migration-interim', allocationPercent: 80 },
+    { devPseudonym: 'DEV_10', scenarioExternalId: 'angular-migration-interim', allocationPercent: 60 },
+    { devPseudonym: 'DEV_12', scenarioExternalId: 'angular-migration-interim', allocationPercent: 100 },
+  ];
+
+  for (const a of allocationData) {
+    await prisma.allocation.upsert({
+      where: { tenantId_devPseudonym_scenarioExternalId: { tenantId, devPseudonym: a.devPseudonym, scenarioExternalId: a.scenarioExternalId } },
+      update: { allocationPercent: a.allocationPercent },
+      create: { tenantId, devPseudonym: a.devPseudonym, scenarioExternalId: a.scenarioExternalId, allocationPercent: a.allocationPercent },
+    });
+  }
 }
 
 async function main() {
