@@ -1,0 +1,401 @@
+{
+  "source": "GitHub",
+  "exportDate": "2026-06-10T00:00:00Z",
+  "repositories": [
+    {
+      "id": "repo-001",
+      "name": "customer-portal-frontend",
+      "defaultBranch": "main",
+      "language": "TypeScript",
+      "framework": "Angular 16.2.12",
+      "createdAt": "2021-03-15T10:00:00Z",
+      "lastCommitAt": "2026-06-09T14:32:00Z",
+      "totalCommits": 4872,
+      "activeBranches": 14,
+      "openPRs": 6,
+      "codeOwners": [
+        "DEV_01",
+        "DEV_03",
+        "DEV_11"
+      ]
+    }
+  ],
+  "contributors": [
+    {
+      "pseudonym": "DEV_01",
+      "totalCommits": 892,
+      "linesAdded": 48200,
+      "linesRemoved": 31400,
+      "lastCommitDate": "2026-06-09",
+      "topDirectories": [
+        "src/app/auth",
+        "src/app/payments",
+        "src/app/shared/ui-kit"
+      ],
+      "languages": {
+        "TypeScript": 82,
+        "HTML": 12,
+        "SCSS": 6
+      }
+    },
+    {
+      "pseudonym": "DEV_02",
+      "totalCommits": 534,
+      "linesAdded": 28100,
+      "linesRemoved": 15300,
+      "lastCommitDate": "2026-06-08",
+      "topDirectories": [
+        "src/app/kyc",
+        "src/app/transactions",
+        "src/app/feature-flags"
+      ],
+      "languages": {
+        "TypeScript": 78,
+        "HTML": 15,
+        "SCSS": 7
+      }
+    },
+    {
+      "pseudonym": "DEV_03",
+      "totalCommits": 1041,
+      "linesAdded": 62300,
+      "linesRemoved": 44100,
+      "lastCommitDate": "2026-06-09",
+      "topDirectories": [
+        "src/app/core",
+        "src/app/shared",
+        "src/app/dashboard",
+        "angular.json"
+      ],
+      "languages": {
+        "TypeScript": 85,
+        "HTML": 8,
+        "SCSS": 4,
+        "JSON": 3
+      }
+    },
+    {
+      "pseudonym": "DEV_04",
+      "totalCommits": 387,
+      "linesAdded": 19800,
+      "linesRemoved": 9200,
+      "lastCommitDate": "2026-06-07",
+      "topDirectories": [
+        "src/app/payments",
+        "src/app/kyc",
+        "src/app/forms"
+      ],
+      "languages": {
+        "TypeScript": 74,
+        "HTML": 18,
+        "SCSS": 8
+      }
+    },
+    {
+      "pseudonym": "DEV_05",
+      "totalCommits": 312,
+      "linesAdded": 14600,
+      "linesRemoved": 7800,
+      "lastCommitDate": "2026-06-06",
+      "topDirectories": [
+        "src/app/notifications",
+        "src/app/support-chat",
+        "src/app/exchange-rates"
+      ],
+      "languages": {
+        "TypeScript": 72,
+        "HTML": 20,
+        "SCSS": 8
+      }
+    },
+    {
+      "pseudonym": "DEV_06",
+      "totalCommits": 245,
+      "linesAdded": 12100,
+      "linesRemoved": 5400,
+      "lastCommitDate": "2026-06-08",
+      "topDirectories": [
+        "src/app/i18n",
+        "src/app/marketing",
+        "src/styles"
+      ],
+      "languages": {
+        "TypeScript": 48,
+        "HTML": 22,
+        "SCSS": 30
+      }
+    },
+    {
+      "pseudonym": "DEV_07",
+      "totalCommits": 468,
+      "linesAdded": 24500,
+      "linesRemoved": 18900,
+      "lastCommitDate": "2026-06-05",
+      "topDirectories": [
+        "src/app/dashboard",
+        "src/app/ledger",
+        "build-scripts",
+        "angular.json"
+      ],
+      "languages": {
+        "TypeScript": 70,
+        "HTML": 10,
+        "SCSS": 5,
+        "JSON": 15
+      }
+    },
+    {
+      "pseudonym": "DEV_12",
+      "totalCommits": 128,
+      "linesAdded": 5800,
+      "linesRemoved": 2100,
+      "lastCommitDate": "2026-06-07",
+      "topDirectories": [
+        "src/app/notifications",
+        "src/app/survey",
+        "src/app/shared/components"
+      ],
+      "languages": {
+        "TypeScript": 68,
+        "HTML": 24,
+        "SCSS": 8
+      }
+    }
+  ],
+  "recentCommits": [
+    {
+      "sha": "a3f8c21",
+      "author": "DEV_01",
+      "date": "2026-06-09T14:32:00Z",
+      "message": "fix(auth): consolidate auth services into unified AuthCoreService",
+      "filesChanged": 28,
+      "insertions": 412,
+      "deletions": 890
+    },
+    {
+      "sha": "b7d4e19",
+      "author": "DEV_03",
+      "date": "2026-06-09T11:20:00Z",
+      "message": "refactor(signals): migrate notification store to Angular Signals",
+      "filesChanged": 14,
+      "insertions": 189,
+      "deletions": 267
+    },
+    {
+      "sha": "c1f2a88",
+      "author": "DEV_07",
+      "date": "2026-06-05T16:45:00Z",
+      "message": "feat(ledger): add reconciliation export with CSV download",
+      "filesChanged": 6,
+      "insertions": 142,
+      "deletions": 12
+    },
+    {
+      "sha": "d9e3b44",
+      "author": "DEV_02",
+      "date": "2026-06-08T09:15:00Z",
+      "message": "fix(payments): correct IBAN validation regex for DE/FR/ES formats",
+      "filesChanged": 3,
+      "insertions": 28,
+      "deletions": 14
+    },
+    {
+      "sha": "e5a7c33",
+      "author": "DEV_04",
+      "date": "2026-06-07T13:50:00Z",
+      "message": "feat(nps): add customer feedback NPS prompt modal",
+      "filesChanged": 8,
+      "insertions": 186,
+      "deletions": 4
+    },
+    {
+      "sha": "f2b1d77",
+      "author": "DEV_06",
+      "date": "2026-06-08T10:30:00Z",
+      "message": "fix(notifications): correct sort order to use createdAt",
+      "filesChanged": 2,
+      "insertions": 8,
+      "deletions": 6
+    },
+    {
+      "sha": "g8c4e55",
+      "author": "DEV_05",
+      "date": "2026-06-06T15:10:00Z",
+      "message": "refactor(perf): implement route-level code splitting",
+      "filesChanged": 22,
+      "insertions": 310,
+      "deletions": 480
+    },
+    {
+      "sha": "h3a9f12",
+      "author": "DEV_03",
+      "date": "2026-06-04T17:00:00Z",
+      "message": "refactor(rxjs): complete operator codemod cleanup pass 2",
+      "filesChanged": 41,
+      "insertions": 220,
+      "deletions": 380
+    },
+    {
+      "sha": "i6d2b89",
+      "author": "DEV_01",
+      "date": "2026-06-03T11:45:00Z",
+      "message": "migration(viewchild): replace static:false defaults across 84 components",
+      "filesChanged": 84,
+      "insertions": 168,
+      "deletions": 168
+    }
+  ],
+  "dependencies": {
+    "packageManager": "npm",
+    "lockfilePresent": true,
+    "totalDependencies": 148,
+    "directDependencies": 42,
+    "critical": [
+      {
+        "name": "@angular/core",
+        "currentVersion": "16.2.12",
+        "latestStable": "19.2.4",
+        "majorsBehind": 3,
+        "eolStatus": "LTS ended 2024-11",
+        "compatibilityRisk": "high",
+        "notes": "Angular 16 LTS expired Nov 2024. Upgrade path: 16→17→18→19 (standalone migration required at 17+)."
+      },
+      {
+        "name": "@angular/cli",
+        "currentVersion": "16.2.12",
+        "latestStable": "19.2.4",
+        "majorsBehind": 3,
+        "eolStatus": "LTS ended 2024-11",
+        "compatibilityRisk": "high",
+        "notes": "Must upgrade in lockstep with @angular/core."
+      },
+      {
+        "name": "rxjs",
+        "currentVersion": "7.8.1",
+        "latestStable": "7.8.1",
+        "majorsBehind": 0,
+        "eolStatus": "current",
+        "compatibilityRisk": "low",
+        "notes": "Recently upgraded from v6 (PORTAL-1009). Operator codemod cleanup ongoing (PORTAL-1053)."
+      },
+      {
+        "name": "zone.js",
+        "currentVersion": "0.14.4",
+        "latestStable": "0.15.0",
+        "majorsBehind": 0,
+        "eolStatus": "current",
+        "compatibilityRisk": "medium",
+        "notes": "Angular 19 supports zoneless mode via Signals. Migration may eliminate this dependency entirely."
+      },
+      {
+        "name": "chart.js",
+        "currentVersion": "4.4.1",
+        "latestStable": "4.4.7",
+        "majorsBehind": 0,
+        "eolStatus": "current",
+        "compatibilityRisk": "low",
+        "notes": "Replaced ngx-charts-legacy (PORTAL-1043)."
+      },
+      {
+        "name": "ngx-datatable",
+        "currentVersion": "20.1.0",
+        "latestStable": "20.1.0",
+        "majorsBehind": 0,
+        "eolStatus": "maintenance",
+        "compatibilityRisk": "medium",
+        "notes": "Low maintenance activity. Signals migration conflicts observed (PORTAL-1003)."
+      },
+      {
+        "name": "@angular/cdk",
+        "currentVersion": "16.2.12",
+        "latestStable": "19.2.4",
+        "majorsBehind": 3,
+        "eolStatus": "follows core",
+        "compatibilityRisk": "high",
+        "notes": "DragDrop module used in allocation board. Must upgrade with core."
+      },
+      {
+        "name": "typescript",
+        "currentVersion": "5.1.6",
+        "latestStable": "5.7.3",
+        "majorsBehind": 0,
+        "eolStatus": "current",
+        "compatibilityRisk": "low",
+        "notes": "Angular 19 requires TS >= 5.5."
+      }
+    ],
+    "vulnerabilities": {
+      "critical": 0,
+      "high": 2,
+      "medium": 7,
+      "low": 14,
+      "details": [
+        {
+          "package": "semver",
+          "severity": "high",
+          "cve": "CVE-2024-XXXX",
+          "fix": "Upgrade to >=7.5.4",
+          "path": "ngx-datatable > semver"
+        },
+        {
+          "package": "postcss",
+          "severity": "high",
+          "cve": "CVE-2025-XXXX",
+          "fix": "Upgrade to >=8.4.38",
+          "path": "@angular/cli > postcss"
+        }
+      ]
+    }
+  },
+  "staticAnalysis": {
+    "tool": "madge",
+    "circularDependencies": [
+      {
+        "cycle": [
+          "src/app/auth/auth-core.service.ts",
+          "src/app/auth/user-profile.service.ts",
+          "src/app/auth/auth-core.service.ts"
+        ],
+        "severity": "high",
+        "notes": "Root cause of PORTAL-1001 overrun. Partially addressed in PORTAL-1050 refactor."
+      },
+      {
+        "cycle": [
+          "src/app/payments/payment-flow.component.ts",
+          "src/app/payments/payment-validation.service.ts",
+          "src/app/shared/forms/validators.ts",
+          "src/app/payments/payment-flow.component.ts"
+        ],
+        "severity": "medium"
+      },
+      {
+        "cycle": [
+          "src/app/dashboard/widget-loader.service.ts",
+          "src/app/dashboard/chart-wrapper.component.ts",
+          "src/app/dashboard/widget-loader.service.ts"
+        ],
+        "severity": "medium",
+        "notes": "Caused memory leak in PORTAL-1051."
+      },
+      {
+        "cycle": [
+          "src/app/feature-flags/feature-flags.service.ts",
+          "src/app/core/config.service.ts",
+          "src/app/feature-flags/feature-flags.service.ts"
+        ],
+        "severity": "low"
+      }
+    ],
+    "moduleCount": 24,
+    "standaloneComponentCount": 18,
+    "legacyNgModuleCount": 22,
+    "orphanedFilesCount": 7,
+    "totalTypeScriptFiles": 486,
+    "testCoverage": {
+      "statements": 62.4,
+      "branches": 48.1,
+      "functions": 58.7,
+      "lines": 63.2
+    }
+  }
+}

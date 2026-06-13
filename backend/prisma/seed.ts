@@ -6,6 +6,21 @@ import * as path from 'path';
 
 const prisma = new PrismaClient();
 
+const DATA_DIR = path.resolve(__dirname, '../data');
+const FIXTURES_DIR = path.join(DATA_DIR, 'fixtures');
+const CONFIG_DIR = path.join(DATA_DIR, 'config');
+const CACHE_DIR = path.join(DATA_DIR, 'cache');
+const SECURE_DIR = path.join(DATA_DIR, 'secure');
+
+function readJson<T>(filePath: string): T {
+  return JSON.parse(fs.readFileSync(filePath, 'utf8')) as T;
+}
+
+function readJsonSafe<T>(filePath: string): T | null {
+  if (!fs.existsSync(filePath)) return null;
+  return JSON.parse(fs.readFileSync(filePath, 'utf8')) as T;
+}
+
 const PERMISSIONS = [
   { action: 'forecast:read', description: 'Read forecast results' },
   { action: 'forecast:write', description: 'Create/update forecasts' },
@@ -53,21 +68,9 @@ const VIEWER_PERMS = [
 const ROLE_MATRIX: { name: string; description: string; perms: string[] }[] = [
   { name: 'super_admin', description: 'Full access including tenant management', perms: ALL_PERMS },
   { name: 'admin', description: 'Tenant admin — all except tenant:manage', perms: ADMIN_PERMS },
-  {
-    name: 'engineering_manager',
-    description: 'Engineering manager — operational reads + selective writes',
-    perms: EM_PERMS,
-  },
+  { name: 'engineering_manager', description: 'Engineering manager — operational reads + selective writes', perms: EM_PERMS },
   { name: 'viewer', description: 'Read-only access', perms: VIEWER_PERMS },
 ];
-
-const FIXTURES_DIR = path.resolve(__dirname, '../../data/fixtures');
-
-function readJsonIfExists<T>(file: string): T | null {
-  const full = path.join(FIXTURES_DIR, file);
-  if (!fs.existsSync(full)) return null;
-  return JSON.parse(fs.readFileSync(full, 'utf8')) as T;
-}
 
 async function upsertPermissions() {
   for (const p of PERMISSIONS) {
@@ -80,21 +83,10 @@ async function upsertPermissions() {
   return prisma.permission.findMany();
 }
 
-async function upsertTenant(input: {
-  name: string;
-  slug: string;
-  brandName: string;
-  primaryColor: string;
-  plan: Plan;
-}) {
+async function upsertTenant(input: { name: string; slug: string; brandName: string; primaryColor: string; plan: Plan }) {
   return prisma.tenant.upsert({
     where: { slug: input.slug },
-    update: {
-      name: input.name,
-      brandName: input.brandName,
-      primaryColor: input.primaryColor,
-      plan: input.plan,
-    },
+    update: { name: input.name, brandName: input.brandName, primaryColor: input.primaryColor, plan: input.plan },
     create: { ...input, settings: {} },
   });
 }
@@ -118,28 +110,16 @@ async function syncSystemRoles(tenantId: string, allPerms: { id: string; action:
     const toRemove = [...currentSet].filter((id) => !desired.has(id));
 
     if (toAdd.length) {
-      await prisma.rolePermission.createMany({
-        data: toAdd.map((permissionId) => ({ roleId: role.id, permissionId })),
-        skipDuplicates: true,
-      });
+      await prisma.rolePermission.createMany({ data: toAdd.map((permissionId) => ({ roleId: role.id, permissionId })), skipDuplicates: true });
     }
     if (toRemove.length) {
-      await prisma.rolePermission.deleteMany({
-        where: { roleId: role.id, permissionId: { in: toRemove } },
-      });
+      await prisma.rolePermission.deleteMany({ where: { roleId: role.id, permissionId: { in: toRemove } } });
     }
   }
   return roles;
 }
 
-async function upsertUserWithMembership(
-  email: string,
-  firstName: string,
-  lastName: string,
-  password: string,
-  tenantId: string,
-  roleId: string,
-) {
+async function upsertUserWithMembership(email: string, firstName: string, lastName: string, password: string, tenantId: string, roleId: string) {
   const passwordHash = await bcrypt.hash(password, 12);
   const user = await prisma.user.upsert({
     where: { email },
@@ -155,69 +135,86 @@ async function upsertUserWithMembership(
 }
 
 async function seedVectorFinFixtures(tenantId: string) {
-  // ─── Developers (12) ──────────────────────────────────────────
-  type DevSeed = {
+  // ─── Developers from hrms-records.json ───────────────────────────────────
+  type HrmsEmployee = {
     pseudonym: string;
     role: string;
     department: string;
     tenureYears: number;
-    costBand: CostBand;
-    skills: string[];
-    realName: string;
-    email: string;
+    costBand: string;
+    skills: Prisma.InputJsonValue;
+    currentAllocation: Prisma.InputJsonValue;
   };
+  type HrmsFile = { employees: HrmsEmployee[] };
 
-  const fixtureDevs = readJsonIfExists<DevSeed[]>('developers.json');
-  const devs: DevSeed[] =
-    fixtureDevs ??
-    Array.from({ length: 12 }, (_, i): DevSeed => {
+  const hrmsFile = readJsonSafe<HrmsFile>(path.join(FIXTURES_DIR, 'hrms-records.json'));
+  const employees: HrmsEmployee[] =
+    hrmsFile?.employees ??
+    Array.from({ length: 12 }, (_, i): HrmsEmployee => {
       const id = String(i + 1).padStart(2, '0');
-      const bands: CostBand[] = [CostBand.C1, CostBand.C2, CostBand.C3, CostBand.C4, CostBand.C5];
-      const roles = ['Frontend', 'Backend', 'Full-stack', 'QA', 'DevOps', 'Tech Lead'];
+      const bands = ['C1', 'C2', 'C3', 'C4', 'C5'];
+      const roleNames = ['Frontend', 'Backend', 'Full-stack', 'QA', 'DevOps', 'Tech Lead'];
       return {
         pseudonym: `DEV_${id}`,
-        role: roles[i % roles.length],
+        role: roleNames[i % roleNames.length],
         department: i < 8 ? 'Customer Portal' : 'Platform',
         tenureYears: Math.round((1 + (i % 8) * 0.7) * 10) / 10,
         costBand: bands[i % bands.length],
         skills: ['typescript', 'angular', 'nestjs'].slice(0, (i % 3) + 1),
-        realName: `Vector Engineer ${id}`,
-        email: `dev${id}@vectorfin.example`,
+        currentAllocation: {},
       };
     });
 
-  for (const d of devs) {
+  for (const emp of employees) {
     await prisma.developer.upsert({
-      where: { tenantId_pseudonym: { tenantId, pseudonym: d.pseudonym } },
+      where: { tenantId_pseudonym: { tenantId, pseudonym: emp.pseudonym } },
       update: {
-        role: d.role,
-        department: d.department,
-        tenureYears: d.tenureYears,
-        costBand: d.costBand,
-        skills: d.skills,
+        role: emp.role,
+        department: emp.department,
+        tenureYears: emp.tenureYears,
+        costBand: emp.costBand as CostBand,
+        skills: emp.skills,
+        currentAllocation: emp.currentAllocation,
       },
       create: {
         tenantId,
-        pseudonym: d.pseudonym,
-        role: d.role,
-        department: d.department,
-        tenureYears: d.tenureYears,
-        costBand: d.costBand,
-        skills: d.skills,
-        currentAllocation: {},
+        pseudonym: emp.pseudonym,
+        role: emp.role,
+        department: emp.department,
+        tenureYears: emp.tenureYears,
+        costBand: emp.costBand as CostBand,
+        skills: emp.skills,
+        currentAllocation: emp.currentAllocation,
       },
-    });
-
-    await prisma.pseudonymMap.upsert({
-      where: { tenantId_pseudonym: { tenantId, pseudonym: d.pseudonym } },
-      update: { realName: d.realName, email: d.email },
-      create: { tenantId, pseudonym: d.pseudonym, realName: d.realName, email: d.email },
     });
   }
 
-  // ─── Jira tickets (60) ────────────────────────────────────────
+  // ─── PseudonymMap from secure/pseudonym-map.json ──────────────────────────
+  type PseudonymMapFile = Record<string, { realName: string; email: string }>;
+  const pseudonymMapFile = readJsonSafe<PseudonymMapFile>(path.join(SECURE_DIR, 'pseudonym-map.json'));
+
+  if (pseudonymMapFile) {
+    for (const [pseudonym, info] of Object.entries(pseudonymMapFile)) {
+      await prisma.pseudonymMap.upsert({
+        where: { tenantId_pseudonym: { tenantId, pseudonym } },
+        update: { realName: info.realName, email: info.email },
+        create: { tenantId, pseudonym, realName: info.realName, email: info.email },
+      });
+    }
+  } else {
+    // Fallback: create from employees list if pseudonym-map.json is missing
+    for (const emp of employees) {
+      await prisma.pseudonymMap.upsert({
+        where: { tenantId_pseudonym: { tenantId, pseudonym: emp.pseudonym } },
+        update: {},
+        create: { tenantId, pseudonym: emp.pseudonym, realName: emp.pseudonym, email: `${emp.pseudonym.toLowerCase()}@vectorfin.example` },
+      });
+    }
+  }
+
+  // ─── Jira Tickets (60) from fixtures/jira-tickets.json ───────────────────
   type TicketSeed = {
-    externalId: string;
+    id: string;
     title: string;
     estimatedPoints: number;
     actualPoints: number;
@@ -226,30 +223,14 @@ async function seedVectorFinFixtures(tenantId: string) {
     sprint: string;
     status: string;
   };
+  type JiraFile = { tickets: TicketSeed[] };
 
-  const fixtureTickets = readJsonIfExists<TicketSeed[]>('jira-tickets.json');
-  const tickets: TicketSeed[] =
-    fixtureTickets ??
-    Array.from({ length: 60 }, (_, i): TicketSeed => {
-      const id = 1001 + i;
-      const devNum = (i % 12) + 1;
-      const sprintNum = Math.floor(i / 10) + 1;
-      const statuses = ['Done', 'In Progress', 'To Do', 'Done', 'Done'];
-      return {
-        externalId: `PORTAL-${id}`,
-        title: `Customer portal task ${id}`,
-        estimatedPoints: ((i % 5) + 1) * 2,
-        actualPoints: ((i % 5) + 1) * 2 + (i % 3),
-        assigneePseudonym: `DEV_${String(devNum).padStart(2, '0')}`,
-        labels: i % 2 === 0 ? ['frontend', 'angular'] : ['backend'],
-        sprint: `Sprint ${sprintNum}`,
-        status: statuses[i % statuses.length],
-      };
-    });
+  const jiraFile = readJsonSafe<JiraFile>(path.join(FIXTURES_DIR, 'jira-tickets.json'));
+  const jiraTickets: TicketSeed[] = jiraFile?.tickets ?? [];
 
-  for (const t of tickets) {
+  for (const t of jiraTickets) {
     await prisma.jiraTicket.upsert({
-      where: { tenantId_externalId: { tenantId, externalId: t.externalId } },
+      where: { tenantId_externalId: { tenantId, externalId: t.id } },
       update: {
         title: t.title,
         estimatedPoints: t.estimatedPoints,
@@ -259,157 +240,184 @@ async function seedVectorFinFixtures(tenantId: string) {
         sprint: t.sprint,
         status: t.status,
       },
-      create: { tenantId, ...t },
+      create: {
+        tenantId,
+        externalId: t.id,
+        title: t.title,
+        estimatedPoints: t.estimatedPoints,
+        actualPoints: t.actualPoints,
+        assigneePseudonym: t.assigneePseudonym,
+        labels: t.labels,
+        sprint: t.sprint,
+        status: t.status,
+      },
     });
   }
 
-  // ─── Git repository ───────────────────────────────────────────
+  // ─── GitRepository from fixtures/git-metadata.json ───────────────────────
+  type GitRepo = {
+    name: string;
+    defaultBranch: string;
+    language: string;
+    framework: string;
+    totalCommits: number;
+    activeBranches: number;
+    openPRs: number;
+    codeOwners: string[];
+  };
+  type GitMetaFile = {
+    repositories: GitRepo[];
+    dependencies: Prisma.InputJsonValue;
+    staticAnalysis: Prisma.InputJsonValue;
+  };
+
+  const gitMetaFile = readJsonSafe<GitMetaFile>(path.join(FIXTURES_DIR, 'git-metadata.json'));
+  const gitRepo = gitMetaFile?.repositories?.[0];
+
   await prisma.gitRepository.upsert({
-    where: { tenantId_name: { tenantId, name: 'customer-portal-frontend' } },
+    where: { tenantId_name: { tenantId, name: gitRepo?.name ?? 'customer-portal-frontend' } },
     update: {},
     create: {
       tenantId,
-      name: 'customer-portal-frontend',
-      defaultBranch: 'main',
-      language: 'TypeScript',
-      framework: 'AngularJS 1.6',
-      metadata: { loc: 142000, components: 318, contributors: 12 },
-      staticAnalysis: { cyclomaticComplexity: 'high', testCoverage: 0.38, lintViolations: 1240 },
-      dependencies: {
-        angular: '1.6.10',
-        jquery: '3.5.1',
-        bootstrap: '3.4.1',
-        nodeVersion: '14',
-      },
+      name: gitRepo?.name ?? 'customer-portal-frontend',
+      defaultBranch: gitRepo?.defaultBranch ?? 'main',
+      language: gitRepo?.language ?? 'TypeScript',
+      framework: gitRepo?.framework ?? 'Angular 16',
+      metadata: gitRepo
+        ? ({ totalCommits: gitRepo.totalCommits, activeBranches: gitRepo.activeBranches, openPRs: gitRepo.openPRs, codeOwners: gitRepo.codeOwners } as Prisma.InputJsonValue)
+        : ({} as Prisma.InputJsonValue),
+      staticAnalysis: gitMetaFile?.staticAnalysis ?? {},
+      dependencies: gitMetaFile?.dependencies ?? {},
     },
   });
 
-  // ─── Scenarios (2) ────────────────────────────────────────────
+  // ─── Scenarios from config/scenarios.json ────────────────────────────────
   type ScenarioSeed = {
-    externalId: string;
+    id: string;
     name: string;
     description: string;
     category: string;
     baseEffortPoints: number;
-    config: Prisma.InputJsonValue;
+    applicableLabels?: string[];
+    riskFactors?: string[];
+    assumptions?: string[];
+    expectedOutcome?: string;
   };
-  const scenarios: ScenarioSeed[] = readJsonIfExists<ScenarioSeed[]>('scenarios.json') ?? [
-    {
-      externalId: 'angular-migration-full',
-      name: 'AngularJS → Angular 17 (Full Rewrite)',
-      description: 'Replace the entire customer portal with a green-field Angular 17 SPA.',
-      category: 'migration',
-      baseEffortPoints: 540,
-      config: { riskProfile: 'aggressive', parallelTeams: 2, dropInterimRelease: true },
-    },
-    {
-      externalId: 'angular-migration-interim',
-      name: 'AngularJS → Angular 17 (Interim Releases)',
-      description: 'Strangler-pattern incremental migration with quarterly interim releases.',
-      category: 'migration',
-      baseEffortPoints: 720,
-      config: { riskProfile: 'conservative', parallelTeams: 1, dropInterimRelease: false },
-    },
-  ];
+  type ScenariosFile = { scenarios: ScenarioSeed[] };
+
+  const scenariosFile = readJsonSafe<ScenariosFile>(path.join(CONFIG_DIR, 'scenarios.json'));
+  const scenarios: ScenarioSeed[] =
+    scenariosFile?.scenarios ??
+    [
+      {
+        id: 'angular-migration-full',
+        name: 'AngularJS → Angular 17 (Full Rewrite)',
+        description: 'Replace the entire customer portal with a green-field Angular 17 SPA.',
+        category: 'migration',
+        baseEffortPoints: 540,
+        applicableLabels: ['migration', 'standalone', 'signals', 'tech-debt', 'refactor'],
+      },
+      {
+        id: 'angular-migration-interim',
+        name: 'AngularJS → Angular 17 (Interim Releases)',
+        description: 'Strangler-pattern incremental migration with quarterly interim releases.',
+        category: 'migration',
+        baseEffortPoints: 720,
+        applicableLabels: ['migration', 'standalone', 'auth', 'payments', 'tech-debt'],
+      },
+    ];
 
   for (const s of scenarios) {
+    const config: Prisma.InputJsonValue = {
+      applicableLabels: s.applicableLabels ?? [],
+      riskFactors: s.riskFactors ?? [],
+      assumptions: s.assumptions ?? [],
+      expectedOutcome: s.expectedOutcome ?? '',
+    };
     await prisma.scenario.upsert({
-      where: { tenantId_externalId: { tenantId, externalId: s.externalId } },
-      update: {
-        name: s.name,
-        description: s.description,
-        category: s.category,
-        baseEffortPoints: s.baseEffortPoints,
-        config: s.config,
-      },
-      create: { tenantId, ...s },
+      where: { tenantId_externalId: { tenantId, externalId: s.id } },
+      update: { name: s.name, description: s.description, category: s.category, baseEffortPoints: s.baseEffortPoints, config },
+      create: { tenantId, externalId: s.id, name: s.name, description: s.description, category: s.category, baseEffortPoints: s.baseEffortPoints, config },
     });
   }
 
-  // ─── Multiplier config v1.0.0 ─────────────────────────────────
-  const multiplierConfig: Prisma.InputJsonValue = readJsonIfExists<Prisma.InputJsonValue>(
-    'multiplier-config.json',
-  ) ?? {
-    costBandRates: { C1: 40, C2: 65, C3: 95, C4: 130, C5: 175 },
-    riskMultipliers: {
-      unknowns: 1.25,
-      externalDependencies: 1.15,
-      teamChurn: 1.1,
-      regulatoryComplexity: 1.2,
-    },
-    contingencyPctByCategory: { migration: 0.25, feature: 0.15, infra: 0.2 },
-  };
+  // ─── MultiplierConfig from config/multipliers.json ───────────────────────
+  const multipliersConfig =
+    readJsonSafe<Prisma.InputJsonValue>(path.join(CONFIG_DIR, 'multipliers.json')) ??
+    ({
+      labelOverrunMultipliers: { migration: 1.3, refactor: 1.15, 'tech-debt': 1.2, standalone: 1.25, signals: 1.3, auth: 1.15, bug: 1.05, feature: 1.1 },
+      complexityMultipliers: { multiMajorVersionJump: 1.4, singleMajorVersionJump: 1.2, lowTestCoverage: 1.15, circularDependencyHigh: 1.1 },
+      teamCapacityFactors: { seniorRatio: { above60pct: 0.85, '40to60pct': 1.0, below40pct: 1.15 }, signalsExperiencePresent: 0.9, signalsExperienceAbsent: 1.1, domainExpertOnTeam: 0.9, noDomainExpert: 1.1 },
+      costBandMonthlyRates: { C1: 225000, C2: 270000, C3: 310000, C4: 355000, C5: 400000 },
+      sprintCapacityPointsPerDev: 10,
+      weeksPerSprint: 2,
+    } as Prisma.InputJsonValue);
+
   await prisma.multiplierConfig.upsert({
     where: { tenantId_version: { tenantId, version: '1.0.0' } },
-    update: { config: multiplierConfig, isActive: true },
-    create: { tenantId, version: '1.0.0', config: multiplierConfig, isActive: true },
+    update: { config: multipliersConfig, isActive: true },
+    create: { tenantId, version: '1.0.0', config: multipliersConfig, isActive: true },
   });
 
-  // ─── AiCache (5 entries) ──────────────────────────────────────
+  // ─── AiCache — 5 entries from data/cache/ JSON files ─────────────────────
+  // cacheKey matches exactly what AiService uses so the cache is warm on first request:
+  //   parseIngestion uses key `ingestion:${source}` for exact lookup
+  //   chat() uses no cacheKey for debate (relies on DebateResult table instead)
+  function loadCacheFile(filename: string): Prisma.InputJsonValue {
+    const raw = readJsonSafe<Record<string, unknown>>(path.join(CACHE_DIR, filename));
+    if (!raw) return {};
+    const { _meta: _, ...data } = raw;
+    return data as Prisma.InputJsonValue;
+  }
+
   const aiCacheEntries: { cacheKey: string; cacheType: AiCacheType; data: Prisma.InputJsonValue }[] = [
-    {
-      cacheKey: 'ingestion:jira:customer-portal',
-      cacheType: AiCacheType.INGESTION_JIRA,
-      data: { tickets: 60, sprints: 6, completionRate: 0.78 },
-    },
-    {
-      cacheKey: 'ingestion:git:customer-portal-frontend',
-      cacheType: AiCacheType.INGESTION_GIT,
-      data: { commits: 4200, contributors: 12, hotspots: ['login.controller.js', 'cart.service.js'] },
-    },
-    {
-      cacheKey: 'ingestion:hrms:vectorfin',
-      cacheType: AiCacheType.INGESTION_HRMS,
-      data: { headcount: 12, avgTenureYears: 3.8, departments: ['Customer Portal', 'Platform'] },
-    },
-    {
-      cacheKey: 'debate:angular-migration-full',
-      cacheType: AiCacheType.DEBATE,
-      data: {
-        frictionFactor: 0.62,
-        confidenceScore: 0.71,
-        keyRisks: ['scope-creep', 'integration-debt', 'regression'],
-      },
-    },
-    {
-      cacheKey: 'debate:angular-migration-interim',
-      cacheType: AiCacheType.DEBATE,
-      data: {
-        frictionFactor: 0.41,
-        confidenceScore: 0.84,
-        keyRisks: ['parallel-feature-drift', 'dual-stack-overhead'],
-      },
-    },
+    { cacheKey: 'ingestion:jira', cacheType: AiCacheType.INGESTION_JIRA, data: loadCacheFile('ai-ingestion-jira.json') },
+    { cacheKey: 'ingestion:git', cacheType: AiCacheType.INGESTION_GIT, data: loadCacheFile('ai-ingestion-git.json') },
+    { cacheKey: 'ingestion:hrms', cacheType: AiCacheType.INGESTION_HRMS, data: loadCacheFile('ai-ingestion-hrms.json') },
+    { cacheKey: 'debate:angular-migration-full', cacheType: AiCacheType.DEBATE, data: loadCacheFile('ai-debate-angular-migration-full.json') },
+    { cacheKey: 'debate:angular-migration-interim', cacheType: AiCacheType.DEBATE, data: loadCacheFile('ai-debate-angular-migration-interim.json') },
   ];
 
-  const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+  // Remove any legacy keys from earlier seed versions
+  const legacyKeys = ['ingestion:jira:customer-portal', 'ingestion:git:customer-portal-frontend', 'ingestion:hrms:vectorfin'];
+  await prisma.aiCache.deleteMany({ where: { tenantId, cacheKey: { in: legacyKeys } } });
+
+  // 1-year expiry so fixture data never expires during demos/testing
+  const expiresAt = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
   for (const entry of aiCacheEntries) {
     await prisma.aiCache.upsert({
       where: { tenantId_cacheKey: { tenantId, cacheKey: entry.cacheKey } },
       update: { cacheType: entry.cacheType, data: entry.data, expiresAt },
-      create: { tenantId, ...entry, expiresAt },
+      create: { tenantId, cacheKey: entry.cacheKey, cacheType: entry.cacheType, data: entry.data, expiresAt },
     });
   }
 
-  // ─── Pre-computed DebateResult fixtures ───────────────────────
-  for (const s of scenarios) {
-    const cached = aiCacheEntries.find((e) => e.cacheKey === `debate:${s.externalId}`);
-    if (!cached) continue;
-    const data = cached.data as Record<string, unknown>;
-    const existing = await prisma.debateResult.findFirst({
-      where: { tenantId, scenarioExternalId: s.externalId, isFixture: true },
-    });
-    if (existing) continue;
+  // ─── DebateResult fixtures — authoritative pre-computed results ───────────
+  // These are read by ForecastService.runForecast() via debateResult.frictionFactor
+  type DebateCacheFile = {
+    frictionFactor: number;
+    confidenceScore: number;
+    keyRisks: Prisma.InputJsonValue;
+    debateLog: Prisma.InputJsonValue;
+  };
+
+  const debateFixtures = [
+    { externalId: 'angular-migration-full', file: 'ai-debate-angular-migration-full.json' },
+    { externalId: 'angular-migration-interim', file: 'ai-debate-angular-migration-interim.json' },
+  ];
+
+  for (const { externalId, file } of debateFixtures) {
+    const raw = readJsonSafe<DebateCacheFile>(path.join(CACHE_DIR, file));
+
+    const frictionFactor = raw?.frictionFactor ?? 1.0;
+    const confidenceScore = raw?.confidenceScore ?? 0.5;
+    const keyRisks = (raw?.keyRisks ?? []) as Prisma.InputJsonValue;
+    const debateLog = (raw?.debateLog ?? []) as Prisma.InputJsonValue;
+
+    // Delete stale fixture rows and recreate with correct values (idempotent)
+    await prisma.debateResult.deleteMany({ where: { tenantId, scenarioExternalId: externalId, isFixture: true } });
     await prisma.debateResult.create({
-      data: {
-        tenantId,
-        scenarioExternalId: s.externalId,
-        frictionFactor: data.frictionFactor as number,
-        confidenceScore: data.confidenceScore as number,
-        keyRisks: data.keyRisks as Prisma.InputJsonValue,
-        debateLog: { source: 'fixture', generatedAt: new Date().toISOString() },
-        isFixture: true,
-      },
+      data: { tenantId, scenarioExternalId: externalId, frictionFactor, confidenceScore, keyRisks, debateLog, isFixture: true },
     });
   }
 }
@@ -419,50 +427,18 @@ async function main() {
   const allPerms = await upsertPermissions();
 
   console.log('Seeding tenants…');
-  const vectorfin = await upsertTenant({
-    name: 'Vector Finance Tech',
-    slug: 'vectorfin',
-    brandName: 'Vector Finance Tech',
-    primaryColor: '#2563EB',
-    plan: Plan.ENTERPRISE,
-  });
-  const demo = await upsertTenant({
-    name: 'Demo Corp',
-    slug: 'demo',
-    brandName: 'Demo Corp',
-    primaryColor: '#2563EB',
-    plan: Plan.FREE,
-  });
+  const vectorfin = await upsertTenant({ name: 'Vector Finance Tech', slug: 'vectorfin', brandName: 'Vector Finance Tech', primaryColor: '#2563EB', plan: Plan.ENTERPRISE });
+  await upsertTenant({ name: 'Demo Corp', slug: 'demo', brandName: 'Demo Corp', primaryColor: '#2563EB', plan: Plan.FREE });
 
   console.log('Seeding roles + permissions per tenant…');
   const vfRoles = await syncSystemRoles(vectorfin.id, allPerms);
-  await syncSystemRoles(demo.id, allPerms);
+  const demo = await prisma.tenant.findUnique({ where: { slug: 'demo' } });
+  if (demo) await syncSystemRoles(demo.id, allPerms);
 
   console.log('Seeding users + memberships…');
-  await upsertUserWithMembership(
-    'admin@vectorfin.example',
-    'Vector',
-    'Admin',
-    'changeme',
-    vectorfin.id,
-    vfRoles['super_admin'],
-  );
-  await upsertUserWithMembership(
-    'em@vectorfin.example',
-    'Vector',
-    'EM',
-    'changeme',
-    vectorfin.id,
-    vfRoles['engineering_manager'],
-  );
-  await upsertUserWithMembership(
-    'viewer@vectorfin.example',
-    'Vector',
-    'Viewer',
-    'changeme',
-    vectorfin.id,
-    vfRoles['viewer'],
-  );
+  await upsertUserWithMembership('admin@vectorfin.example', 'Vector', 'Admin', 'changeme', vectorfin.id, vfRoles['super_admin']);
+  await upsertUserWithMembership('em@vectorfin.example', 'Vector', 'EM', 'changeme', vectorfin.id, vfRoles['engineering_manager']);
+  await upsertUserWithMembership('viewer@vectorfin.example', 'Vector', 'Viewer', 'changeme', vectorfin.id, vfRoles['viewer']);
 
   console.log('Seeding vectorfin fixture data…');
   await seedVectorFinFixtures(vectorfin.id);

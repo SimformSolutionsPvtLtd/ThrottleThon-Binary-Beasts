@@ -1,0 +1,125 @@
+{
+  "_meta": {
+    "source": "gemini-1.5-flash",
+    "scenarioId": "angular-migration-full",
+    "rounds": 2,
+    "cachedAt": "2026-06-10T12:20:00Z",
+    "cacheKey": "ai-debate-angular-migration-full",
+    "mode": "fixture"
+  },
+  "frictionFactor": 2.1,
+  "confidenceScore": 0.62,
+  "keyRisks": [
+    {
+      "risk": "Auth-core circular dependency creates cascading test failures during standalone conversion",
+      "severity": "critical",
+      "sourceAgent": "Opposer",
+      "evidence": "PORTAL-1001 overran by 120% due to this exact cycle; PORTAL-1050 consolidation is incomplete"
+    },
+    {
+      "risk": "3-major-version jump means each intermediate version (17, 18) must be verified even if not deployed, tripling the integration test surface",
+      "severity": "critical",
+      "sourceAgent": "Worst-Case",
+      "evidence": "Angular upgrade guide documents breaking changes at each major; combined they affect 40+ API surfaces used in this codebase"
+    },
+    {
+      "risk": "ngx-datatable may not be compatible with Angular 19 and has no migration path documented",
+      "severity": "high",
+      "sourceAgent": "Opposer",
+      "evidence": "Library's last release was 6 months ago; GitHub issues show unresolved Angular 18 compatibility reports"
+    },
+    {
+      "risk": "Signals knowledge is concentrated in DEV_01 and DEV_03 — if either is unavailable, migration stalls",
+      "severity": "high",
+      "sourceAgent": "Worst-Case",
+      "evidence": "Only 2 of 12 team members have Signals proficiency; PORTAL-1003 and PORTAL-1011 are the team's only prior Signals work"
+    },
+    {
+      "risk": "48.1% branch coverage means a significant portion of payment and form validation paths are untested and may break silently during migration",
+      "severity": "high",
+      "sourceAgent": "Researcher",
+      "evidence": "Payments module and forms module had the highest overrun ratios (PORTAL-1038: 2.13x), correlated with low test coverage in those areas"
+    },
+    {
+      "risk": "Team's historical migration overrun pattern (2.32x average) has not improved across 8 sprints, suggesting estimates for this migration will also be 2x+ optimistic",
+      "severity": "medium",
+      "sourceAgent": "Opposer",
+      "evidence": "S1-S8 migration label average: 2.32x overrun with no downward trend"
+    },
+    {
+      "risk": "Full migration freezes all feature work for the estimated duration, creating business pressure to cut scope mid-project and leave the codebase in a partially-migrated state",
+      "severity": "medium",
+      "sourceAgent": "Worst-Case",
+      "evidence": "Customer Portal is a revenue-critical product; past feature freezes at this org have been cut short after 6-8 weeks"
+    }
+  ],
+  "debateLog": [
+    {
+      "round": 1,
+      "agent": "Researcher",
+      "position": "advocate",
+      "argument": "Full migration to Angular 19 eliminates 3 years of accumulated technical debt in a single coordinated effort. The team has already completed the hardest prerequisites: RxJS v7 upgrade, ngx-charts replacement, and initial standalone component POCs. The codebase's 22 legacy NgModules and 4 circular dependency cycles represent an ongoing drag on velocity — every sprint, 30-40% of overruns trace back to legacy patterns. A full migration now, while the team has recent hands-on experience, is more efficient than deferring and losing institutional knowledge.",
+      "evidenceCited": [
+        "PORTAL-1009 (RxJS upgrade complete)",
+        "PORTAL-1043 (ngx-charts replaced)",
+        "PORTAL-1003 (signals POC)",
+        "Label overrun data: migration tickets at 2.32x"
+      ]
+    },
+    {
+      "round": 1,
+      "agent": "Opposer",
+      "position": "challenger",
+      "argument": "The Researcher's framing ignores the compounding risk of a 3-major-version jump. Each intermediate version introduces its own breaking changes, and Angular's own migration guide explicitly warns against skipping versions. The auth-core circular dependency — the single highest-severity structural issue in the codebase — remains partially unresolved after PORTAL-1050. Attempting standalone conversion of auth-core before this cycle is fully broken will recreate the exact cascading failure seen in PORTAL-1001 (120% overrun). Additionally, ngx-datatable's Angular 19 compatibility is unconfirmed, which could force an unplanned library replacement mid-migration.",
+      "evidenceCited": [
+        "PORTAL-1001 (auth overrun)",
+        "PORTAL-1050 (incomplete auth consolidation)",
+        "ngx-datatable maintenance status",
+        "Static analysis: 4 circular dependency cycles"
+      ]
+    },
+    {
+      "round": 1,
+      "agent": "Worst-Case",
+      "position": "pessimist",
+      "argument": "If DEV_03 (the only architect-level engineer with Signals experience and 1041 commits across core/) becomes unavailable — whether through illness, leave, or attrition — the migration loses its single most critical knowledge holder. The team's 48.1% branch coverage means that payments and forms modules, which historically overrun by 2.1x, have large untested code paths that will break silently. In the worst case, the migration takes 2.5x the estimate, the feature freeze exceeds the business's tolerance at week 8, and the codebase is left in a half-migrated state that is harder to maintain than the current legacy state.",
+      "evidenceCited": [
+        "DEV_03: 1041 commits, only architect with Signals",
+        "Branch coverage: 48.1%",
+        "PORTAL-1038: forms migration 2.13x overrun",
+        "Historical feature-freeze tolerance: ~8 weeks"
+      ]
+    },
+    {
+      "round": 2,
+      "agent": "Researcher",
+      "position": "advocate",
+      "argument": "The Opposer's risk about ngx-datatable is valid but manageable — the spike in PORTAL-1022 already identified chart.js wrappers as a replacement pattern, and the same approach can be applied to datatable if needed. The Worst-Case's bus-factor concern about DEV_03 is mitigated by starting with a 2-sprint knowledge-transfer phase where DEV_03 pairs with DEV_01 and DEV_07 on Signals patterns. The branch coverage gap is real, but deferring migration does not fix it — it just means the same untested paths break later, with even more accumulated debt on top.",
+      "evidenceCited": [
+        "PORTAL-1022 (library replacement spike)",
+        "PORTAL-1043 (successful chart.js migration pattern)"
+      ]
+    },
+    {
+      "round": 2,
+      "agent": "Opposer",
+      "position": "challenger",
+      "argument": "The knowledge-transfer phase the Researcher proposes adds 4 weeks to the timeline and further extends the feature freeze. More critically, the team's historical data shows no improvement in migration estimation accuracy over 8 sprints — the overrun multiplier for migration-labelled tickets is flat at 2.3x. Proposing that this migration will be different requires explaining what has structurally changed. Nothing in the data suggests it has. The Researcher's strongest argument — that prerequisite work is done — is valid, but it argues equally well for the interim path: do Angular 16→17, stabilise, then plan 17→19 with better data.",
+      "evidenceCited": [
+        "Migration overrun trend: flat across S1-S8",
+        "No structural change in estimation process"
+      ]
+    },
+    {
+      "round": 2,
+      "agent": "Worst-Case",
+      "position": "pessimist",
+      "argument": "Even accepting the Researcher's mitigations, the worst plausible outcome remains a half-completed migration. If the feature freeze is cut short at week 8 (consistent with past organizational behaviour), a 3-version jump leaves the codebase on Angular 17 or 18 with partial standalone conversion — essentially the interim scenario but achieved less efficiently. The financial exposure in this worst case is the full migration cost (~₹13M+ risk-adjusted) for the interim outcome. The interim path caps downside exposure at ~₹5M for a guaranteed deliverable.",
+      "evidenceCited": [
+        "Past feature-freeze duration: ~8 weeks",
+        "Cost differential: full vs interim"
+      ]
+    }
+  ],
+  "synthesizerSummary": "The debate reveals a high-conviction case for the long-term value of full migration but equally strong evidence that the team's structural estimation patterns and single-points-of-failure create material execution risk. The frictionFactor of 2.1 reflects the combined effect of the 3-version jump, circular dependency complexity, and the team's persistent 2.3x migration overrun pattern. The 0.62 confidence score reflects the genuine uncertainty: the prerequisite work is real and valuable, but the team has not demonstrated improved migration execution over 8 sprints. Decision-makers should weigh the ~₹8M cost differential against the risk of a partial outcome."
+}

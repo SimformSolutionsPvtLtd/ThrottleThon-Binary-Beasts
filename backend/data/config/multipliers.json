@@ -1,0 +1,64 @@
+{
+  "version": "1.0.0",
+  "description": "Lookup tables for deterministic forecast calculations. All values derived from the 8-sprint ticket history analysis.",
+  "labelOverrunMultipliers": {
+    "_description": "Average (actual/estimated) ratio per label, computed from PORTAL ticket history.",
+    "migration": 2.32,
+    "refactor": 1.85,
+    "tech-debt": 2.18,
+    "standalone": 2.27,
+    "signals": 2.6,
+    "auth": 1.93,
+    "rxjs": 2.5,
+    "charts": 2.22,
+    "forms": 2.13,
+    "tooling": 2.4,
+    "bug": 1.42,
+    "feature": 1.12,
+    "spike": 1.14,
+    "kyc": 1.19,
+    "payments": 1.35,
+    "i18n": 1.15,
+    "ui": 1.8,
+    "ssr": 1.67,
+    "perf": 1.5,
+    "admin": 1.38,
+    "mobile": 1.13
+  },
+  "complexityMultipliers": {
+    "_description": "Applied based on static analysis findings.",
+    "circularDependencyHigh": 1.25,
+    "circularDependencyMedium": 1.12,
+    "circularDependencyLow": 1.05,
+    "lowTestCoverage": 1.2,
+    "legacyModuleConversion": 1.15,
+    "multiMajorVersionJump": 1.35,
+    "singleMajorVersionJump": 1.1
+  },
+  "teamCapacityFactors": {
+    "_description": "Adjustments based on team composition.",
+    "seniorRatio": {
+      "above60pct": 0.9,
+      "40to60pct": 1,
+      "below40pct": 1.15
+    },
+    "signalsExperiencePresent": 0.92,
+    "signalsExperienceAbsent": 1.18,
+    "domainExpertOnTeam": 0.88,
+    "noDomainExpert": 1.1
+  },
+  "contingencyDefaults": {
+    "low": 0.05,
+    "medium": 0.1,
+    "high": 0.2
+  },
+  "costBandMonthlyRates": {
+    "C1": 225000,
+    "C2": 270000,
+    "C3": 310000,
+    "C4": 355000,
+    "C5": 400000
+  },
+  "sprintCapacityPointsPerDev": 10,
+  "weeksPerSprint": 2
+}

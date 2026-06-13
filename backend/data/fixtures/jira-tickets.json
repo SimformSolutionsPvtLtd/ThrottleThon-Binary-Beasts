@@ -1,0 +1,816 @@
+{
+  "project": "PORTAL",
+  "source": "Jira Cloud",
+  "exportDate": "2026-06-10T00:00:00Z",
+  "sprintMeta": {
+    "sprintDurationWeeks": 2,
+    "sprintCount": 8,
+    "sprints": [
+      {
+        "id": "S1",
+        "name": "Sprint 1",
+        "startDate": "2025-10-06",
+        "endDate": "2025-10-17"
+      },
+      {
+        "id": "S2",
+        "name": "Sprint 2",
+        "startDate": "2025-10-20",
+        "endDate": "2025-10-31"
+      },
+      {
+        "id": "S3",
+        "name": "Sprint 3",
+        "startDate": "2025-11-03",
+        "endDate": "2025-11-14"
+      },
+      {
+        "id": "S4",
+        "name": "Sprint 4",
+        "startDate": "2025-11-17",
+        "endDate": "2025-11-28"
+      },
+      {
+        "id": "S5",
+        "name": "Sprint 5",
+        "startDate": "2025-12-01",
+        "endDate": "2025-12-12"
+      },
+      {
+        "id": "S6",
+        "name": "Sprint 6",
+        "startDate": "2025-12-15",
+        "endDate": "2025-12-26"
+      },
+      {
+        "id": "S7",
+        "name": "Sprint 7",
+        "startDate": "2026-01-05",
+        "endDate": "2026-01-16"
+      },
+      {
+        "id": "S8",
+        "name": "Sprint 8",
+        "startDate": "2026-01-19",
+        "endDate": "2026-01-30"
+      }
+    ]
+  },
+  "tickets": [
+    {
+      "id": "PORTAL-1001",
+      "title": "Refactor auth interceptor for new token shape",
+      "estimatedPoints": 5,
+      "actualPoints": 11,
+      "assigneePseudonym": "DEV_01",
+      "labels": [
+        "refactor",
+        "auth"
+      ],
+      "sprint": "S1",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1002",
+      "title": "Add KYC document upload flow",
+      "estimatedPoints": 8,
+      "actualPoints": 10,
+      "assigneePseudonym": "DEV_02",
+      "labels": [
+        "feature",
+        "kyc"
+      ],
+      "sprint": "S1",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1003",
+      "title": "Migrate transaction list to Angular signals POC",
+      "estimatedPoints": 5,
+      "actualPoints": 13,
+      "assigneePseudonym": "DEV_03",
+      "labels": [
+        "migration",
+        "signals"
+      ],
+      "sprint": "S1",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1004",
+      "title": "Bug: payment receipt PDF missing footer",
+      "estimatedPoints": 2,
+      "actualPoints": 2,
+      "assigneePseudonym": "DEV_04",
+      "labels": [
+        "bug",
+        "payments"
+      ],
+      "sprint": "S1",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1005",
+      "title": "Add support-chat unread badge",
+      "estimatedPoints": 3,
+      "actualPoints": 4,
+      "assigneePseudonym": "DEV_05",
+      "labels": [
+        "feature"
+      ],
+      "sprint": "S1",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1006",
+      "title": "Refactor session manager to remove deprecated APIs",
+      "estimatedPoints": 8,
+      "actualPoints": 17,
+      "assigneePseudonym": "DEV_01",
+      "labels": [
+        "refactor",
+        "tech-debt"
+      ],
+      "sprint": "S1",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1007",
+      "title": "Feature: i18n for marketing pages",
+      "estimatedPoints": 5,
+      "actualPoints": 6,
+      "assigneePseudonym": "DEV_06",
+      "labels": [
+        "feature",
+        "i18n"
+      ],
+      "sprint": "S2",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1008",
+      "title": "Bug: dashboard widgets crash on empty data",
+      "estimatedPoints": 3,
+      "actualPoints": 5,
+      "assigneePseudonym": "DEV_07",
+      "labels": [
+        "bug",
+        "charts"
+      ],
+      "sprint": "S2",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1009",
+      "title": "Migration: upgrade rxjs to v7",
+      "estimatedPoints": 5,
+      "actualPoints": 14,
+      "assigneePseudonym": "DEV_02",
+      "labels": [
+        "migration",
+        "rxjs"
+      ],
+      "sprint": "S2",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1010",
+      "title": "Feature: biometric login android",
+      "estimatedPoints": 8,
+      "actualPoints": 9,
+      "assigneePseudonym": "DEV_04",
+      "labels": [
+        "feature",
+        "mobile"
+      ],
+      "sprint": "S2",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1011",
+      "title": "Spike: signals vs zonejs benchmark",
+      "estimatedPoints": 3,
+      "actualPoints": 3,
+      "assigneePseudonym": "DEV_03",
+      "labels": [
+        "spike"
+      ],
+      "sprint": "S2",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1012",
+      "title": "Bug: feature flag flicker on first load",
+      "estimatedPoints": 2,
+      "actualPoints": 3,
+      "assigneePseudonym": "DEV_05",
+      "labels": [
+        "bug"
+      ],
+      "sprint": "S2",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1013",
+      "title": "Refactor: extract shared form controls",
+      "estimatedPoints": 5,
+      "actualPoints": 12,
+      "assigneePseudonym": "DEV_06",
+      "labels": [
+        "refactor"
+      ],
+      "sprint": "S2",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1014",
+      "title": "Feature: export ledger CSV",
+      "estimatedPoints": 3,
+      "actualPoints": 3,
+      "assigneePseudonym": "DEV_07",
+      "labels": [
+        "feature"
+      ],
+      "sprint": "S3",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1015",
+      "title": "Migration: standalone components POC for shared-ui-kit",
+      "estimatedPoints": 5,
+      "actualPoints": 13,
+      "assigneePseudonym": "DEV_01",
+      "labels": [
+        "migration",
+        "standalone"
+      ],
+      "sprint": "S3",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1016",
+      "title": "Bug: transaction filter resets on tab switch",
+      "estimatedPoints": 2,
+      "actualPoints": 3,
+      "assigneePseudonym": "DEV_02",
+      "labels": [
+        "bug"
+      ],
+      "sprint": "S3",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1017",
+      "title": "Feature: compliance check banner",
+      "estimatedPoints": 3,
+      "actualPoints": 3,
+      "assigneePseudonym": "DEV_04",
+      "labels": [
+        "feature"
+      ],
+      "sprint": "S3",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1018",
+      "title": "Refactor: extract router guards",
+      "estimatedPoints": 5,
+      "actualPoints": 9,
+      "assigneePseudonym": "DEV_03",
+      "labels": [
+        "refactor",
+        "auth"
+      ],
+      "sprint": "S3",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1019",
+      "title": "Bug: notification badge stuck after read",
+      "estimatedPoints": 2,
+      "actualPoints": 2,
+      "assigneePseudonym": "DEV_05",
+      "labels": [
+        "bug"
+      ],
+      "sprint": "S3",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1020",
+      "title": "Feature: document vault preview",
+      "estimatedPoints": 5,
+      "actualPoints": 5,
+      "assigneePseudonym": "DEV_06",
+      "labels": [
+        "feature"
+      ],
+      "sprint": "S3",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1021",
+      "title": "Migration: replace deprecated HttpModule with HttpClient",
+      "estimatedPoints": 5,
+      "actualPoints": 16,
+      "assigneePseudonym": "DEV_07",
+      "labels": [
+        "migration",
+        "tech-debt"
+      ],
+      "sprint": "S3",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1022",
+      "title": "Spike: explore replacing ngx-charts-legacy",
+      "estimatedPoints": 3,
+      "actualPoints": 4,
+      "assigneePseudonym": "DEV_01",
+      "labels": [
+        "spike",
+        "charts"
+      ],
+      "sprint": "S4",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1023",
+      "title": "Feature: admin user search",
+      "estimatedPoints": 3,
+      "actualPoints": 3,
+      "assigneePseudonym": "DEV_02",
+      "labels": [
+        "feature"
+      ],
+      "sprint": "S4",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1024",
+      "title": "Bug: payments-flow drops state on browser back",
+      "estimatedPoints": 3,
+      "actualPoints": 6,
+      "assigneePseudonym": "DEV_04",
+      "labels": [
+        "bug",
+        "payments"
+      ],
+      "sprint": "S4",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1025",
+      "title": "Refactor: collapse duplicated transaction filters",
+      "estimatedPoints": 5,
+      "actualPoints": 10,
+      "assigneePseudonym": "DEV_03",
+      "labels": [
+        "refactor"
+      ],
+      "sprint": "S4",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1026",
+      "title": "Feature: real-time exchange rates widget",
+      "estimatedPoints": 5,
+      "actualPoints": 6,
+      "assigneePseudonym": "DEV_05",
+      "labels": [
+        "feature"
+      ],
+      "sprint": "S4",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1027",
+      "title": "Bug: support chat reconnects spam",
+      "estimatedPoints": 2,
+      "actualPoints": 3,
+      "assigneePseudonym": "DEV_06",
+      "labels": [
+        "bug"
+      ],
+      "sprint": "S4",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1028",
+      "title": "Migration: replace deprecated lifecycle hooks",
+      "estimatedPoints": 8,
+      "actualPoints": 19,
+      "assigneePseudonym": "DEV_07",
+      "labels": [
+        "migration",
+        "tech-debt"
+      ],
+      "sprint": "S4",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1029",
+      "title": "Feature: in-app survey",
+      "estimatedPoints": 2,
+      "actualPoints": 2,
+      "assigneePseudonym": "DEV_01",
+      "labels": [
+        "feature"
+      ],
+      "sprint": "S5",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1030",
+      "title": "Refactor: move analytics-charts off legacy lib",
+      "estimatedPoints": 5,
+      "actualPoints": 11,
+      "assigneePseudonym": "DEV_02",
+      "labels": [
+        "refactor",
+        "charts"
+      ],
+      "sprint": "S5",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1031",
+      "title": "Bug: KYC step 3 validation glitch",
+      "estimatedPoints": 3,
+      "actualPoints": 4,
+      "assigneePseudonym": "DEV_04",
+      "labels": [
+        "bug",
+        "kyc"
+      ],
+      "sprint": "S5",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1032",
+      "title": "Feature: dark mode for dashboard",
+      "estimatedPoints": 5,
+      "actualPoints": 9,
+      "assigneePseudonym": "DEV_03",
+      "labels": [
+        "feature",
+        "ui"
+      ],
+      "sprint": "S5",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1033",
+      "title": "Migration: convert auth-core to standalone",
+      "estimatedPoints": 8,
+      "actualPoints": 18,
+      "assigneePseudonym": "DEV_05",
+      "labels": [
+        "migration",
+        "standalone",
+        "auth"
+      ],
+      "sprint": "S5",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1034",
+      "title": "Bug: marketing page hydration mismatch",
+      "estimatedPoints": 3,
+      "actualPoints": 5,
+      "assigneePseudonym": "DEV_06",
+      "labels": [
+        "bug",
+        "ssr"
+      ],
+      "sprint": "S5",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1035",
+      "title": "Refactor: extract printable brief template",
+      "estimatedPoints": 5,
+      "actualPoints": 8,
+      "assigneePseudonym": "DEV_07",
+      "labels": [
+        "refactor"
+      ],
+      "sprint": "S5",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1036",
+      "title": "Feature: payment scheduling",
+      "estimatedPoints": 8,
+      "actualPoints": 9,
+      "assigneePseudonym": "DEV_01",
+      "labels": [
+        "feature",
+        "payments"
+      ],
+      "sprint": "S6",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1037",
+      "title": "Bug: feature flags fallback wrong",
+      "estimatedPoints": 2,
+      "actualPoints": 2,
+      "assigneePseudonym": "DEV_02",
+      "labels": [
+        "bug"
+      ],
+      "sprint": "S6",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1038",
+      "title": "Migration: remove deprecated forms APIs",
+      "estimatedPoints": 8,
+      "actualPoints": 17,
+      "assigneePseudonym": "DEV_04",
+      "labels": [
+        "migration",
+        "forms"
+      ],
+      "sprint": "S6",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1039",
+      "title": "Refactor: standardize error boundaries",
+      "estimatedPoints": 5,
+      "actualPoints": 11,
+      "assigneePseudonym": "DEV_03",
+      "labels": [
+        "refactor"
+      ],
+      "sprint": "S6",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1040",
+      "title": "Feature: audit log filters",
+      "estimatedPoints": 3,
+      "actualPoints": 3,
+      "assigneePseudonym": "DEV_05",
+      "labels": [
+        "feature"
+      ],
+      "sprint": "S6",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1041",
+      "title": "Bug: session-manager logout glitch on idle",
+      "estimatedPoints": 3,
+      "actualPoints": 5,
+      "assigneePseudonym": "DEV_06",
+      "labels": [
+        "bug",
+        "auth"
+      ],
+      "sprint": "S6",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1042",
+      "title": "Feature: transaction tagging",
+      "estimatedPoints": 5,
+      "actualPoints": 6,
+      "assigneePseudonym": "DEV_07",
+      "labels": [
+        "feature"
+      ],
+      "sprint": "S6",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1043",
+      "title": "Migration: remove ngx-charts-legacy from analytics",
+      "estimatedPoints": 8,
+      "actualPoints": 21,
+      "assigneePseudonym": "DEV_01",
+      "labels": [
+        "migration",
+        "charts"
+      ],
+      "sprint": "S7",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1044",
+      "title": "Bug: receipts download corrupt",
+      "estimatedPoints": 2,
+      "actualPoints": 3,
+      "assigneePseudonym": "DEV_02",
+      "labels": [
+        "bug",
+        "payments"
+      ],
+      "sprint": "S7",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1045",
+      "title": "Refactor: clean up dashboard widget loader",
+      "estimatedPoints": 3,
+      "actualPoints": 6,
+      "assigneePseudonym": "DEV_04",
+      "labels": [
+        "refactor"
+      ],
+      "sprint": "S7",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1046",
+      "title": "Feature: admin console RBAC",
+      "estimatedPoints": 8,
+      "actualPoints": 11,
+      "assigneePseudonym": "DEV_03",
+      "labels": [
+        "feature",
+        "admin"
+      ],
+      "sprint": "S7",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1047",
+      "title": "Bug: i18n key missing on receipts",
+      "estimatedPoints": 2,
+      "actualPoints": 2,
+      "assigneePseudonym": "DEV_05",
+      "labels": [
+        "bug",
+        "i18n"
+      ],
+      "sprint": "S7",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1048",
+      "title": "Migration: angular-cli config to standalone schema",
+      "estimatedPoints": 5,
+      "actualPoints": 12,
+      "assigneePseudonym": "DEV_06",
+      "labels": [
+        "migration",
+        "tooling"
+      ],
+      "sprint": "S7",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1049",
+      "title": "Feature: ledger reconciliation export",
+      "estimatedPoints": 5,
+      "actualPoints": 5,
+      "assigneePseudonym": "DEV_07",
+      "labels": [
+        "feature"
+      ],
+      "sprint": "S7",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1050",
+      "title": "Refactor: collapse 3 auth services into one",
+      "estimatedPoints": 5,
+      "actualPoints": 12,
+      "assigneePseudonym": "DEV_01",
+      "labels": [
+        "refactor",
+        "auth"
+      ],
+      "sprint": "S7",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1051",
+      "title": "Bug: dashboard widgets memory leak",
+      "estimatedPoints": 3,
+      "actualPoints": 4,
+      "assigneePseudonym": "DEV_02",
+      "labels": [
+        "bug",
+        "perf"
+      ],
+      "sprint": "S8",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1052",
+      "title": "Feature: kyc retry email",
+      "estimatedPoints": 2,
+      "actualPoints": 2,
+      "assigneePseudonym": "DEV_04",
+      "labels": [
+        "feature"
+      ],
+      "sprint": "S8",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1053",
+      "title": "Migration: rxjs operators codemod",
+      "estimatedPoints": 5,
+      "actualPoints": 11,
+      "assigneePseudonym": "DEV_03",
+      "labels": [
+        "migration",
+        "rxjs"
+      ],
+      "sprint": "S8",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1054",
+      "title": "Refactor: route-level code splitting",
+      "estimatedPoints": 5,
+      "actualPoints": 8,
+      "assigneePseudonym": "DEV_05",
+      "labels": [
+        "refactor",
+        "perf"
+      ],
+      "sprint": "S8",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1055",
+      "title": "Bug: notification center order wrong",
+      "estimatedPoints": 2,
+      "actualPoints": 3,
+      "assigneePseudonym": "DEV_06",
+      "labels": [
+        "bug"
+      ],
+      "sprint": "S8",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1056",
+      "title": "Feature: support chat file attachments",
+      "estimatedPoints": 5,
+      "actualPoints": 6,
+      "assigneePseudonym": "DEV_07",
+      "labels": [
+        "feature"
+      ],
+      "sprint": "S8",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1057",
+      "title": "Migration: replace ViewChild static false defaults",
+      "estimatedPoints": 5,
+      "actualPoints": 13,
+      "assigneePseudonym": "DEV_01",
+      "labels": [
+        "migration",
+        "tech-debt"
+      ],
+      "sprint": "S8",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1058",
+      "title": "Bug: payments-validation rejects valid IBAN",
+      "estimatedPoints": 2,
+      "actualPoints": 2,
+      "assigneePseudonym": "DEV_02",
+      "labels": [
+        "bug",
+        "payments"
+      ],
+      "sprint": "S8",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1059",
+      "title": "Feature: customer feedback NPS prompt",
+      "estimatedPoints": 3,
+      "actualPoints": 3,
+      "assigneePseudonym": "DEV_04",
+      "labels": [
+        "feature"
+      ],
+      "sprint": "S8",
+      "status": "done"
+    },
+    {
+      "id": "PORTAL-1060",
+      "title": "Refactor: collapse duplicate notification services",
+      "estimatedPoints": 5,
+      "actualPoints": 11,
+      "assigneePseudonym": "DEV_03",
+      "labels": [
+        "refactor"
+      ],
+      "sprint": "S8",
+      "status": "done"
+    }
+  ]
+}

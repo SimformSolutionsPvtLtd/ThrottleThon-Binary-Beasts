@@ -42,7 +42,7 @@ export class AgentHubService {
     // Round 1 — sequential
     const r1Researcher = await this.callAgent(tenantId, RESEARCHER_PROMPT, `Evidence:\n${evidenceStr}`)
       .catch(() => { r1FailCount++; return null; });
-    if (r1FailCount > 2) return this.fixtureResult(tenantId, Date.now() - t0);
+    if (r1FailCount > 2) return this.fixtureResult(tenantId, Date.now() - t0, scenarioExternalId);
     if (r1Researcher) round1.push({ agent: 'Researcher', prompt: RESEARCHER_PROMPT, ...r1Researcher });
 
     const r1Opposer = await this.callAgent(
@@ -50,7 +50,7 @@ export class AgentHubService {
       OPPOSER_PROMPT,
       `Evidence:\n${evidenceStr}\n\nResearcher Analysis (R1):\n${JSON.stringify(r1Researcher)}`,
     ).catch(() => { r1FailCount++; return null; });
-    if (r1FailCount > 2) return this.fixtureResult(tenantId, Date.now() - t0);
+    if (r1FailCount > 2) return this.fixtureResult(tenantId, Date.now() - t0, scenarioExternalId);
     if (r1Opposer) round1.push({ agent: 'Opposer', prompt: OPPOSER_PROMPT, ...r1Opposer });
 
     const r1WorstCase = await this.callAgent(
@@ -58,7 +58,7 @@ export class AgentHubService {
       WORST_CASE_PROMPT,
       `Evidence:\n${evidenceStr}\n\nResearcher Analysis (R1):\n${JSON.stringify(r1Researcher)}\n\nOpposer Analysis (R1):\n${JSON.stringify(r1Opposer)}`,
     ).catch(() => { r1FailCount++; return null; });
-    if (r1FailCount > 2) return this.fixtureResult(tenantId, Date.now() - t0);
+    if (r1FailCount > 2) return this.fixtureResult(tenantId, Date.now() - t0, scenarioExternalId);
     if (r1WorstCase) round1.push({ agent: 'WorstCase', prompt: WORST_CASE_PROMPT, ...r1WorstCase });
 
     const fullR1Str = JSON.stringify({ researcher: r1Researcher, opposer: r1Opposer, worstCase: r1WorstCase });
@@ -108,8 +108,17 @@ export class AgentHubService {
       DebateResultSchema,
     );
 
-    const result = synthResult.content as DebateResultOutput;
+    let result = synthResult.content as DebateResultOutput;
     const mode = synthResult.meta.mode;
+
+    // When Gemini is unavailable, prefer the pre-seeded debate data for this scenario
+    // over the hardcoded FixtureProvider defaults.
+    if (mode === 'fixture') {
+      const seeded = await this.aiCacheService.get(tenantId, `debate:${scenarioExternalId}`);
+      if (seeded) {
+        result = seeded.data as DebateResultOutput;
+      }
+    }
 
     return {
       result,
@@ -143,7 +152,15 @@ export class AgentHubService {
   private async fixtureResult(
     tenantId: string,
     totalDurationMs: number,
+    scenarioExternalId?: string,
   ): Promise<{ result: DebateResultOutput; meta: { mode: string; totalDurationMs: number; roundsCompleted: number } }> {
+    // Prefer seeded per-scenario debate data over the hardcoded FixtureProvider defaults
+    if (scenarioExternalId) {
+      const seeded = await this.aiCacheService.get(tenantId, `debate:${scenarioExternalId}`);
+      if (seeded) {
+        return { result: seeded.data as DebateResultOutput, meta: { mode: 'fixture', totalDurationMs, roundsCompleted: 0 } };
+      }
+    }
     const fixtureChat = await this.aiService.chat(tenantId, SYNTHESIZER_PROMPT, 'Return fixture debate result', DebateResultSchema);
     return {
       result: fixtureChat.content as DebateResultOutput,

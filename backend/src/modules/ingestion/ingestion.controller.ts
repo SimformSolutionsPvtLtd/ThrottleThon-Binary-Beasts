@@ -8,7 +8,7 @@ import { IngestionService } from './ingestion.service';
 
 @ApiTags('ingestion')
 @UseGuards(TenantGuard)
-@Controller('api/v1/ingest')
+@Controller('ingest')
 export class IngestionController {
   constructor(private readonly ingestionService: IngestionService) {}
 

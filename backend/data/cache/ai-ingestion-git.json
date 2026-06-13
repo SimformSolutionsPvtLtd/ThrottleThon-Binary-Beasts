@@ -1,0 +1,176 @@
+{
+  "_meta": {
+    "source": "gemini-1.5-flash",
+    "prompt": "Analyze customer-portal-frontend repository for codebase complexity, dependency risks, and migration readiness.",
+    "cachedAt": "2026-06-10T12:05:00Z",
+    "ttlHours": 24,
+    "cacheKey": "ai-ingestion-git-repo-001"
+  },
+  "complexityReport": {
+    "overallComplexityScore": 7.2,
+    "maxScore": 10,
+    "breakdown": {
+      "circularDependencies": {
+        "score": 8.5,
+        "weight": 0.25,
+        "detail": "4 cycles detected, 1 high-severity in auth-core ↔ user-profile. This is the single biggest migration risk."
+      },
+      "legacyModuleDebt": {
+        "score": 7.8,
+        "weight": 0.2,
+        "detail": "22 of 40 total modules still use legacy NgModule pattern. Standalone conversion required for Angular 17+ best practices."
+      },
+      "testCoverage": {
+        "score": 6.5,
+        "weight": 0.15,
+        "detail": "62.4% statement coverage, 48.1% branch coverage. Migration changes in untested paths will carry regression risk."
+      },
+      "dependencyHealth": {
+        "score": 7,
+        "weight": 0.2,
+        "detail": "Core framework 3 majors behind. 2 high-severity npm vulnerabilities. ngx-datatable maintenance status uncertain."
+      },
+      "codeChurn": {
+        "score": 5.5,
+        "weight": 0.1,
+        "detail": "Auth and payments modules show highest churn (890+ deletions in recent consolidation). Stabilisation needed before migration."
+      },
+      "bundleComplexity": {
+        "score": 6,
+        "weight": 0.1,
+        "detail": "486 TS files across 24 modules. Route-level code splitting recently implemented (PORTAL-1054) but not yet covering all lazy routes."
+      }
+    }
+  },
+  "dependencyRiskAssessment": [
+    {
+      "package": "@angular/core",
+      "risk": "critical",
+      "reason": "3 major versions behind, LTS expired. Every sprint of delay increases migration difficulty as the ecosystem moves further ahead."
+    },
+    {
+      "package": "ngx-datatable",
+      "risk": "high",
+      "reason": "Low maintenance activity, Signals conflicts observed. May need replacement during or after migration."
+    },
+    {
+      "package": "zone.js",
+      "risk": "medium",
+      "reason": "Angular 19 supports zoneless. Removing it is optional but yields significant performance gains for the real-time dashboard widgets."
+    },
+    {
+      "package": "@angular/cdk",
+      "risk": "high",
+      "reason": "DragDrop API changes between v16 and v19. Allocation board depends on this heavily."
+    },
+    {
+      "package": "postcss",
+      "risk": "medium",
+      "reason": "Transitive vulnerability via @angular/cli. Will be resolved automatically by the Angular upgrade."
+    }
+  ],
+  "migrationReadiness": {
+    "overallReadiness": "moderate",
+    "readinessScore": 0.55,
+    "strengths": [
+      "RxJS already upgraded to v7 (eliminates one major migration blocker)",
+      "ngx-charts-legacy already replaced with chart.js (PORTAL-1043)",
+      "Route-level code splitting in place (PORTAL-1054)",
+      "Team has recent hands-on signals experience (PORTAL-1003, PORTAL-1011)"
+    ],
+    "blockers": [
+      "Auth-core circular dependency must be resolved before standalone conversion",
+      "22 NgModules need standalone conversion (Angular 17+ recommended path)",
+      "Test coverage gaps in payments and forms modules — highest migration-risk areas",
+      "ngx-datatable Angular 19 compatibility unconfirmed"
+    ]
+  },
+  "gitInferredSkills": [
+    {
+      "pseudonym": "DEV_01",
+      "inferredSkills": [
+        "Angular auth patterns",
+        "Service consolidation",
+        "Migration execution",
+        "ViewChild patterns"
+      ],
+      "confidence": 0.88,
+      "evidence": "892 commits, primary contributor to auth/, payments/, shared/ui-kit/"
+    },
+    {
+      "pseudonym": "DEV_02",
+      "inferredSkills": [
+        "KYC flows",
+        "Feature flags",
+        "RxJS migration",
+        "IBAN validation"
+      ],
+      "confidence": 0.82,
+      "evidence": "534 commits, primary contributor to kyc/, transactions/, feature-flags/"
+    },
+    {
+      "pseudonym": "DEV_03",
+      "inferredSkills": [
+        "Architecture",
+        "Angular Signals",
+        "RxJS operators",
+        "Core module design",
+        "Code review"
+      ],
+      "confidence": 0.92,
+      "evidence": "1041 commits, highest contributor, owns core/ and shared/, led signals POC and rxjs codemod"
+    },
+    {
+      "pseudonym": "DEV_04",
+      "inferredSkills": [
+        "Payments domain",
+        "Forms/validators",
+        "Angular forms APIs"
+      ],
+      "confidence": 0.78,
+      "evidence": "387 commits in payments/, kyc/, forms/"
+    },
+    {
+      "pseudonym": "DEV_05",
+      "inferredSkills": [
+        "Notifications",
+        "WebSocket integration",
+        "Performance optimization",
+        "Code splitting"
+      ],
+      "confidence": 0.72,
+      "evidence": "312 commits, led route-level code splitting (PORTAL-1054)"
+    },
+    {
+      "pseudonym": "DEV_06",
+      "inferredSkills": [
+        "CSS/Theming",
+        "i18n",
+        "SSR/hydration",
+        "Marketing pages"
+      ],
+      "confidence": 0.74,
+      "evidence": "245 commits, 30% SCSS contribution, owns i18n/ and marketing/"
+    },
+    {
+      "pseudonym": "DEV_07",
+      "inferredSkills": [
+        "Build tooling",
+        "Angular CLI config",
+        "Dashboard widgets",
+        "Legacy library replacement"
+      ],
+      "confidence": 0.8,
+      "evidence": "468 commits, owns build-scripts/ and angular.json, led ngx-charts replacement and lifecycle hooks migration"
+    },
+    {
+      "pseudonym": "DEV_12",
+      "inferredSkills": [
+        "Basic Angular components",
+        "Notifications UI"
+      ],
+      "confidence": 0.58,
+      "evidence": "128 commits, junior contributor in notifications/ and shared/components/"
+    }
+  ]
+}

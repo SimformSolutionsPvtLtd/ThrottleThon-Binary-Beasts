@@ -10,7 +10,7 @@ import { RunDebateDto } from './dto/run-debate.dto';
 
 @ApiTags('debate')
 @UseGuards(TenantGuard)
-@Controller('api/v1/debate')
+@Controller('debate')
 export class DebateController {
   constructor(
     private readonly agentHub: AgentHubService,
