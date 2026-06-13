@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Scenario } from '@prisma/client';
+import { Prisma, Scenario } from '@prisma/client';
 import { PrismaService } from '../../infrastructure/prisma/prisma.service';
 import { CreateScenarioDto } from './dto/create-scenario.dto';
 
@@ -29,7 +29,7 @@ export class ScenariosService {
         projectId: dto.projectId,
         name: dto.name,
         category: dto.category,
-        assumptions: dto.assumptions ?? {},
+        assumptions: (dto.assumptions ?? {}) as Prisma.InputJsonValue,
         createdBy: userId,
       },
     });
