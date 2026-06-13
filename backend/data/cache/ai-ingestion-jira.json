@@ -1,0 +1,386 @@
+{
+  "_meta": {
+    "source": "gemini-1.5-flash",
+    "prompt": "Analyze PORTAL project Jira ticket history for velocity index, overrun patterns, and developer contribution metrics.",
+    "cachedAt": "2026-06-10T12:00:00Z",
+    "ttlHours": 24,
+    "cacheKey": "ai-ingestion-jira-PORTAL-S1-S8"
+  },
+  "velocityAnalysis": {
+    "teamVelocityIndex": 0.569,
+    "overallOverrunRatio": 1.759,
+    "sprintBreakdown": [
+      {
+        "sprint": "S1",
+        "estimatedPoints": 31,
+        "actualPoints": 57,
+        "ticketCount": 6,
+        "overrunRatio": 1.84
+      },
+      {
+        "sprint": "S2",
+        "estimatedPoints": 31,
+        "actualPoints": 52,
+        "ticketCount": 7,
+        "overrunRatio": 1.68
+      },
+      {
+        "sprint": "S3",
+        "estimatedPoints": 30,
+        "actualPoints": 54,
+        "ticketCount": 8,
+        "overrunRatio": 1.8
+      },
+      {
+        "sprint": "S4",
+        "estimatedPoints": 29,
+        "actualPoints": 51,
+        "ticketCount": 7,
+        "overrunRatio": 1.76
+      },
+      {
+        "sprint": "S5",
+        "estimatedPoints": 31,
+        "actualPoints": 57,
+        "ticketCount": 7,
+        "overrunRatio": 1.84
+      },
+      {
+        "sprint": "S6",
+        "estimatedPoints": 34,
+        "actualPoints": 53,
+        "ticketCount": 7,
+        "overrunRatio": 1.56
+      },
+      {
+        "sprint": "S7",
+        "estimatedPoints": 38,
+        "actualPoints": 72,
+        "ticketCount": 8,
+        "overrunRatio": 1.89
+      },
+      {
+        "sprint": "S8",
+        "estimatedPoints": 37,
+        "actualPoints": 63,
+        "ticketCount": 10,
+        "overrunRatio": 1.7
+      }
+    ],
+    "totalEstimatedPoints": 261,
+    "totalActualPoints": 459,
+    "averagePointsPerSprint": 57.4
+  },
+  "developerContributions": [
+    {
+      "pseudonym": "DEV_01",
+      "ticketsCompleted": 9,
+      "totalEstimated": 49,
+      "totalActual": 102,
+      "personalOverrunRatio": 2.08,
+      "personalVelocityIndex": 0.48,
+      "topLabels": [
+        {
+          "label": "refactor",
+          "count": 3
+        },
+        {
+          "label": "migration",
+          "count": 3
+        },
+        {
+          "label": "auth",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "pseudonym": "DEV_02",
+      "ticketsCompleted": 9,
+      "totalEstimated": 32,
+      "totalActual": 52,
+      "personalOverrunRatio": 1.63,
+      "personalVelocityIndex": 0.615,
+      "topLabels": [
+        {
+          "label": "bug",
+          "count": 5
+        },
+        {
+          "label": "feature",
+          "count": 2
+        },
+        {
+          "label": "payments",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "pseudonym": "DEV_03",
+      "ticketsCompleted": 9,
+      "totalEstimated": 46,
+      "totalActual": 88,
+      "personalOverrunRatio": 1.91,
+      "personalVelocityIndex": 0.523,
+      "topLabels": [
+        {
+          "label": "refactor",
+          "count": 4
+        },
+        {
+          "label": "migration",
+          "count": 2
+        },
+        {
+          "label": "feature",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "pseudonym": "DEV_04",
+      "ticketsCompleted": 9,
+      "totalEstimated": 35,
+      "totalActual": 52,
+      "personalOverrunRatio": 1.49,
+      "personalVelocityIndex": 0.673,
+      "topLabels": [
+        {
+          "label": "feature",
+          "count": 4
+        },
+        {
+          "label": "bug",
+          "count": 3
+        },
+        {
+          "label": "payments",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "pseudonym": "DEV_05",
+      "ticketsCompleted": 8,
+      "totalEstimated": 30,
+      "totalActual": 46,
+      "personalOverrunRatio": 1.53,
+      "personalVelocityIndex": 0.652,
+      "topLabels": [
+        {
+          "label": "feature",
+          "count": 3
+        },
+        {
+          "label": "bug",
+          "count": 3
+        },
+        {
+          "label": "migration",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "pseudonym": "DEV_06",
+      "ticketsCompleted": 8,
+      "totalEstimated": 30,
+      "totalActual": 51,
+      "personalOverrunRatio": 1.7,
+      "personalVelocityIndex": 0.588,
+      "topLabels": [
+        {
+          "label": "bug",
+          "count": 4
+        },
+        {
+          "label": "feature",
+          "count": 2
+        },
+        {
+          "label": "i18n",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "pseudonym": "DEV_07",
+      "ticketsCompleted": 8,
+      "totalEstimated": 39,
+      "totalActual": 68,
+      "personalOverrunRatio": 1.74,
+      "personalVelocityIndex": 0.574,
+      "topLabels": [
+        {
+          "label": "feature",
+          "count": 4
+        },
+        {
+          "label": "migration",
+          "count": 2
+        },
+        {
+          "label": "tech-debt",
+          "count": 2
+        }
+      ]
+    }
+  ],
+  "labelOverrunAnalysis": [
+    {
+      "label": "signals",
+      "ticketCount": 1,
+      "totalEstimated": 5,
+      "totalActual": 13,
+      "overrunRatio": 2.6
+    },
+    {
+      "label": "tech-debt",
+      "ticketCount": 4,
+      "totalEstimated": 26,
+      "totalActual": 65,
+      "overrunRatio": 2.5
+    },
+    {
+      "label": "rxjs",
+      "ticketCount": 2,
+      "totalEstimated": 10,
+      "totalActual": 25,
+      "overrunRatio": 2.5
+    },
+    {
+      "label": "migration",
+      "ticketCount": 11,
+      "totalEstimated": 67,
+      "totalActual": 167,
+      "overrunRatio": 2.49
+    },
+    {
+      "label": "tooling",
+      "ticketCount": 1,
+      "totalEstimated": 5,
+      "totalActual": 12,
+      "overrunRatio": 2.4
+    },
+    {
+      "label": "standalone",
+      "ticketCount": 2,
+      "totalEstimated": 13,
+      "totalActual": 31,
+      "overrunRatio": 2.38
+    },
+    {
+      "label": "charts",
+      "ticketCount": 4,
+      "totalEstimated": 19,
+      "totalActual": 41,
+      "overrunRatio": 2.16
+    },
+    {
+      "label": "forms",
+      "ticketCount": 1,
+      "totalEstimated": 8,
+      "totalActual": 17,
+      "overrunRatio": 2.13
+    },
+    {
+      "label": "auth",
+      "ticketCount": 5,
+      "totalEstimated": 26,
+      "totalActual": 55,
+      "overrunRatio": 2.12
+    },
+    {
+      "label": "refactor",
+      "ticketCount": 12,
+      "totalEstimated": 61,
+      "totalActual": 126,
+      "overrunRatio": 2.07
+    },
+    {
+      "label": "ui",
+      "ticketCount": 1,
+      "totalEstimated": 5,
+      "totalActual": 9,
+      "overrunRatio": 1.8
+    },
+    {
+      "label": "ssr",
+      "ticketCount": 1,
+      "totalEstimated": 3,
+      "totalActual": 5,
+      "overrunRatio": 1.67
+    },
+    {
+      "label": "perf",
+      "ticketCount": 2,
+      "totalEstimated": 8,
+      "totalActual": 12,
+      "overrunRatio": 1.5
+    },
+    {
+      "label": "bug",
+      "ticketCount": 16,
+      "totalEstimated": 38,
+      "totalActual": 54,
+      "overrunRatio": 1.42
+    },
+    {
+      "label": "admin",
+      "ticketCount": 1,
+      "totalEstimated": 8,
+      "totalActual": 11,
+      "overrunRatio": 1.38
+    },
+    {
+      "label": "payments",
+      "ticketCount": 5,
+      "totalEstimated": 17,
+      "totalActual": 22,
+      "overrunRatio": 1.29
+    },
+    {
+      "label": "kyc",
+      "ticketCount": 2,
+      "totalEstimated": 11,
+      "totalActual": 14,
+      "overrunRatio": 1.27
+    },
+    {
+      "label": "feature",
+      "ticketCount": 19,
+      "totalEstimated": 89,
+      "totalActual": 105,
+      "overrunRatio": 1.18
+    },
+    {
+      "label": "spike",
+      "ticketCount": 2,
+      "totalEstimated": 6,
+      "totalActual": 7,
+      "overrunRatio": 1.17
+    },
+    {
+      "label": "i18n",
+      "ticketCount": 2,
+      "totalEstimated": 7,
+      "totalActual": 8,
+      "overrunRatio": 1.14
+    },
+    {
+      "label": "mobile",
+      "ticketCount": 1,
+      "totalEstimated": 8,
+      "totalActual": 9,
+      "overrunRatio": 1.13
+    }
+  ],
+  "insights": [
+    "Migration-labelled tickets consistently overrun by 2.3x or more, with 'signals' and 'rxjs' being the worst at 2.5-2.6x. This pattern suggests the team systematically underestimates the cascading test and dependency breakage from framework-level changes.",
+    "Refactor tickets average 1.85x overrun — lower than migrations but still significant. The root causes (discovered duplication, cross-squad coordination, undocumented legacy behaviour) are structural, not skill-based.",
+    "Feature and bug tickets are estimated relatively accurately (1.12x and 1.42x respectively), indicating the team's estimation weakness is specifically around migration/refactor scope, not general estimation skill.",
+    "DEV_01 and DEV_07 consistently draw the hardest migration/tech-debt tickets and show the highest personal overrun ratios, which reflects assignment difficulty rather than individual underperformance.",
+    "Sprint velocity shows no improvement trend across S1-S8 for migration work, suggesting the team has not yet internalised the overrun pattern into their estimates."
+  ]
+}

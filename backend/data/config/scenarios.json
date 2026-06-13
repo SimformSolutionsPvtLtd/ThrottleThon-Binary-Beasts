@@ -1,0 +1,59 @@
+{
+  "version": "1.0.0",
+  "scenarios": [
+    {
+      "id": "angular-migration-full",
+      "name": "Full Angular 19 Migration + Standalone Conversion",
+      "description": "Complete migration from Angular 16 to 19, converting all 22 legacy NgModules to standalone components, eliminating zone.js in favour of Signals, upgrading all CDK/Material dependencies, and addressing all circular dependencies.",
+      "category": "migration",
+      "baseEffortPoints": 340,
+      "applicableLabels": [
+        "migration",
+        "standalone",
+        "signals",
+        "tech-debt",
+        "refactor"
+      ],
+      "riskFactors": [
+        "3-major-version jump (16→17→18→19) with breaking changes at each step",
+        "22 legacy NgModules requiring standalone conversion",
+        "4 circular dependency cycles to untangle before migration",
+        "ngx-datatable compatibility unknown with Angular 19",
+        "Test coverage at 62% means regressions may go undetected"
+      ],
+      "assumptions": [
+        "Team of 7 frontend engineers available (DEV_01 through DEV_07)",
+        "No concurrent major feature work during migration sprints",
+        "Backend APIs remain stable during migration",
+        "QA automation (DEV_10) capacity at 100%"
+      ],
+      "expectedOutcome": "Fully modernised Angular 19 codebase with standalone components, Signals-based state, zero legacy NgModules, all circular dependencies resolved, and zone.js removed."
+    },
+    {
+      "id": "angular-migration-interim",
+      "name": "Interim Angular 17 Upgrade + Critical Fixes Only",
+      "description": "Upgrade from Angular 16 to 17 (single major version), convert only the auth-core and payments modules to standalone (the two most problematic areas), fix the high-severity circular dependencies, and defer the full standalone/Signals migration to a later quarter.",
+      "category": "migration",
+      "baseEffortPoints": 145,
+      "applicableLabels": [
+        "migration",
+        "standalone",
+        "auth",
+        "payments",
+        "tech-debt"
+      ],
+      "riskFactors": [
+        "Single major version jump (16→17) — well-documented upgrade path",
+        "Deferred tech debt: 20 of 22 NgModules remain legacy",
+        "zone.js remains, limiting future performance gains",
+        "Angular 17 LTS will expire in ~18 months, requiring another upgrade"
+      ],
+      "assumptions": [
+        "Core team of 4 senior engineers (DEV_01, DEV_02, DEV_03, DEV_07) with remaining team on feature work",
+        "Auth-core and payments modules are the highest-value standalone targets based on ticket overrun data",
+        "QA automation partially available (50%)"
+      ],
+      "expectedOutcome": "Angular 17 codebase with auth-core and payments modules on standalone, high-severity circular deps resolved, remaining migration deferred to next quarter."
+    }
+  ]
+}

@@ -1,0 +1,384 @@
+{
+  "organization": "Vector Finance Tech",
+  "exportDate": "2026-06-10T00:00:00Z",
+  "employees": [
+    {
+      "pseudonym": "DEV_01",
+      "role": "Senior Frontend Engineer",
+      "department": "Engineering - Frontend",
+      "tenureYears": 6,
+      "costBand": "C4",
+      "skills": [
+        {
+          "tech": "Angular",
+          "proficiency": 5,
+          "source": "hrms"
+        },
+        {
+          "tech": "TypeScript",
+          "proficiency": 5,
+          "source": "hrms"
+        },
+        {
+          "tech": "RxJS",
+          "proficiency": 4,
+          "source": "hrms"
+        },
+        {
+          "tech": "Angular Signals (v17+)",
+          "proficiency": 4,
+          "source": "hrms"
+        }
+      ],
+      "currentAllocation": {
+        "project": "Customer Portal",
+        "percent": 100
+      }
+    },
+    {
+      "pseudonym": "DEV_02",
+      "role": "Frontend Engineer",
+      "department": "Engineering - Frontend",
+      "tenureYears": 3,
+      "costBand": "C3",
+      "skills": [
+        {
+          "tech": "Angular",
+          "proficiency": 4,
+          "source": "hrms"
+        },
+        {
+          "tech": "TypeScript",
+          "proficiency": 4,
+          "source": "hrms"
+        },
+        {
+          "tech": "RxJS",
+          "proficiency": 3,
+          "source": "hrms"
+        }
+      ],
+      "currentAllocation": {
+        "project": "Customer Portal",
+        "percent": 100
+      }
+    },
+    {
+      "pseudonym": "DEV_03",
+      "role": "Staff Frontend Engineer",
+      "department": "Engineering - Frontend",
+      "tenureYears": 7,
+      "costBand": "C5",
+      "skills": [
+        {
+          "tech": "Angular",
+          "proficiency": 5,
+          "source": "hrms"
+        },
+        {
+          "tech": "TypeScript",
+          "proficiency": 5,
+          "source": "hrms"
+        },
+        {
+          "tech": "Angular Signals (v17+)",
+          "proficiency": 4,
+          "source": "hrms"
+        },
+        {
+          "tech": "Architecture",
+          "proficiency": 4,
+          "source": "hrms"
+        }
+      ],
+      "currentAllocation": {
+        "project": "Customer Portal",
+        "percent": 80
+      }
+    },
+    {
+      "pseudonym": "DEV_04",
+      "role": "Mid Frontend Engineer",
+      "department": "Engineering - Frontend",
+      "tenureYears": 2,
+      "costBand": "C2",
+      "skills": [
+        {
+          "tech": "Angular",
+          "proficiency": 3,
+          "source": "hrms"
+        },
+        {
+          "tech": "TypeScript",
+          "proficiency": 4,
+          "source": "hrms"
+        },
+        {
+          "tech": "Payments domain",
+          "proficiency": 4,
+          "source": "hrms"
+        }
+      ],
+      "currentAllocation": {
+        "project": "Customer Portal",
+        "percent": 100
+      }
+    },
+    {
+      "pseudonym": "DEV_05",
+      "role": "Frontend Engineer",
+      "department": "Engineering - Frontend",
+      "tenureYears": 2,
+      "costBand": "C2",
+      "skills": [
+        {
+          "tech": "Angular",
+          "proficiency": 3,
+          "source": "hrms"
+        },
+        {
+          "tech": "TypeScript",
+          "proficiency": 3,
+          "source": "hrms"
+        },
+        {
+          "tech": "RxJS",
+          "proficiency": 2,
+          "source": "hrms"
+        }
+      ],
+      "currentAllocation": {
+        "project": "Customer Portal",
+        "percent": 100
+      }
+    },
+    {
+      "pseudonym": "DEV_06",
+      "role": "Junior Frontend Engineer",
+      "department": "Engineering - Frontend",
+      "tenureYears": 1,
+      "costBand": "C1",
+      "skills": [
+        {
+          "tech": "Angular",
+          "proficiency": 2,
+          "source": "hrms"
+        },
+        {
+          "tech": "TypeScript",
+          "proficiency": 3,
+          "source": "hrms"
+        },
+        {
+          "tech": "CSS/Theming",
+          "proficiency": 4,
+          "source": "hrms"
+        }
+      ],
+      "currentAllocation": {
+        "project": "Customer Portal",
+        "percent": 100
+      }
+    },
+    {
+      "pseudonym": "DEV_07",
+      "role": "Frontend Engineer",
+      "department": "Engineering - Internal Tools",
+      "tenureYears": 3,
+      "costBand": "C3",
+      "skills": [
+        {
+          "tech": "Angular",
+          "proficiency": 4,
+          "source": "hrms"
+        },
+        {
+          "tech": "TypeScript",
+          "proficiency": 4,
+          "source": "hrms"
+        },
+        {
+          "tech": "Build tooling",
+          "proficiency": 3,
+          "source": "hrms"
+        }
+      ],
+      "currentAllocation": {
+        "project": "Internal Tools",
+        "percent": 60
+      }
+    },
+    {
+      "pseudonym": "DEV_08",
+      "role": "Senior Backend Engineer",
+      "department": "Engineering - Backend",
+      "tenureYears": 5,
+      "costBand": "C4",
+      "skills": [
+        {
+          "tech": "Node.js",
+          "proficiency": 5,
+          "source": "hrms"
+        },
+        {
+          "tech": "PostgreSQL",
+          "proficiency": 4,
+          "source": "hrms"
+        },
+        {
+          "tech": "Angular",
+          "proficiency": 3,
+          "source": "hrms"
+        },
+        {
+          "tech": "TypeScript",
+          "proficiency": 4,
+          "source": "hrms"
+        }
+      ],
+      "currentAllocation": {
+        "project": "Payments API",
+        "percent": 100
+      }
+    },
+    {
+      "pseudonym": "DEV_09",
+      "role": "Backend Engineer",
+      "department": "Engineering - Backend",
+      "tenureYears": 4,
+      "costBand": "C3",
+      "skills": [
+        {
+          "tech": "Java",
+          "proficiency": 4,
+          "source": "hrms"
+        },
+        {
+          "tech": "Spring Boot",
+          "proficiency": 4,
+          "source": "hrms"
+        },
+        {
+          "tech": "Angular",
+          "proficiency": 2,
+          "source": "hrms"
+        },
+        {
+          "tech": "TypeScript",
+          "proficiency": 3,
+          "source": "hrms"
+        }
+      ],
+      "currentAllocation": {
+        "project": "Core Banking",
+        "percent": 100
+      }
+    },
+    {
+      "pseudonym": "DEV_10",
+      "role": "QA Automation Engineer",
+      "department": "Engineering - QA",
+      "tenureYears": 2,
+      "costBand": "C2",
+      "skills": [
+        {
+          "tech": "Cypress",
+          "proficiency": 4,
+          "source": "hrms"
+        },
+        {
+          "tech": "TypeScript",
+          "proficiency": 3,
+          "source": "hrms"
+        },
+        {
+          "tech": "Playwright",
+          "proficiency": 3,
+          "source": "hrms"
+        }
+      ],
+      "currentAllocation": {
+        "project": "Customer Portal",
+        "percent": 100
+      }
+    },
+    {
+      "pseudonym": "DEV_11",
+      "role": "Engineering Manager",
+      "department": "Engineering - Management",
+      "tenureYears": 8,
+      "costBand": "C5",
+      "skills": [
+        {
+          "tech": "Angular",
+          "proficiency": 4,
+          "source": "hrms"
+        },
+        {
+          "tech": "Leadership",
+          "proficiency": 5,
+          "source": "hrms"
+        },
+        {
+          "tech": "Architecture",
+          "proficiency": 4,
+          "source": "hrms"
+        }
+      ],
+      "currentAllocation": {
+        "project": "Customer Portal",
+        "percent": 50
+      }
+    },
+    {
+      "pseudonym": "DEV_12",
+      "role": "Junior Frontend Engineer",
+      "department": "Engineering - Frontend",
+      "tenureYears": 1,
+      "costBand": "C1",
+      "skills": [
+        {
+          "tech": "Angular",
+          "proficiency": 2,
+          "source": "hrms"
+        },
+        {
+          "tech": "TypeScript",
+          "proficiency": 2,
+          "source": "hrms"
+        }
+      ],
+      "currentAllocation": {
+        "project": "Customer Portal",
+        "percent": 100
+      }
+    }
+  ],
+  "costBandReference": {
+    "C1": {
+      "label": "Junior / Entry",
+      "annualRangeINR": "2400000-3000000",
+      "monthlyBurnRate": 225000
+    },
+    "C2": {
+      "label": "Mid-Level",
+      "annualRangeINR": "3000000-3500000",
+      "monthlyBurnRate": 270000
+    },
+    "C3": {
+      "label": "Senior-Track",
+      "annualRangeINR": "3500000-4000000",
+      "monthlyBurnRate": 310000
+    },
+    "C4": {
+      "label": "Senior",
+      "annualRangeINR": "4000000-4500000",
+      "monthlyBurnRate": 355000
+    },
+    "C5": {
+      "label": "Staff / Lead / Manager",
+      "annualRangeINR": "4500000-5200000",
+      "monthlyBurnRate": 400000
+    }
+  }
+}

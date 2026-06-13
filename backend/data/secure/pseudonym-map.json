@@ -1,0 +1,50 @@
+{
+  "DEV_01": {
+    "realName": "Priya Shah",
+    "email": "priya.shah@vectorfin.example"
+  },
+  "DEV_02": {
+    "realName": "Arjun Mehta",
+    "email": "arjun.mehta@vectorfin.example"
+  },
+  "DEV_03": {
+    "realName": "Riya Kapoor",
+    "email": "riya.kapoor@vectorfin.example"
+  },
+  "DEV_04": {
+    "realName": "Devansh Nair",
+    "email": "devansh.nair@vectorfin.example"
+  },
+  "DEV_05": {
+    "realName": "Aditya Rao",
+    "email": "aditya.rao@vectorfin.example"
+  },
+  "DEV_06": {
+    "realName": "Sneha Iyer",
+    "email": "sneha.iyer@vectorfin.example"
+  },
+  "DEV_07": {
+    "realName": "Kabir Singh",
+    "email": "kabir.singh@vectorfin.example"
+  },
+  "DEV_08": {
+    "realName": "Meera Joshi",
+    "email": "meera.joshi@vectorfin.example"
+  },
+  "DEV_09": {
+    "realName": "Rohan Desai",
+    "email": "rohan.desai@vectorfin.example"
+  },
+  "DEV_10": {
+    "realName": "Tanya Verma",
+    "email": "tanya.verma@vectorfin.example"
+  },
+  "DEV_11": {
+    "realName": "Vikram Chauhan",
+    "email": "vikram.chauhan@vectorfin.example"
+  },
+  "DEV_12": {
+    "realName": "Ishan Bhatt",
+    "email": "ishan.bhatt@vectorfin.example"
+  }
+}

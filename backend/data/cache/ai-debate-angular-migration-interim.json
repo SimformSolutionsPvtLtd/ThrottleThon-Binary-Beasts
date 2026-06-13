@@ -1,0 +1,110 @@
+{
+  "_meta": {
+    "source": "gemini-1.5-flash",
+    "scenarioId": "angular-migration-interim",
+    "rounds": 2,
+    "cachedAt": "2026-06-10T12:25:00Z",
+    "cacheKey": "ai-debate-angular-migration-interim",
+    "mode": "fixture"
+  },
+  "frictionFactor": 1.45,
+  "confidenceScore": 0.81,
+  "keyRisks": [
+    {
+      "risk": "Deferred technical debt: 20 of 22 NgModules remain legacy after the interim upgrade, accumulating further migration burden",
+      "severity": "medium",
+      "sourceAgent": "Opposer",
+      "evidence": "Only auth-core and payments modules are converted; remaining 20 modules stay on legacy patterns"
+    },
+    {
+      "risk": "Angular 17 LTS expires in ~18 months, requiring another major upgrade cycle before the LTS window closes",
+      "severity": "medium",
+      "sourceAgent": "Worst-Case",
+      "evidence": "Angular's LTS policy: 18 months from release date for each major version"
+    },
+    {
+      "risk": "Auth-core circular dependency may still cause overruns even in the smaller scope, based on PORTAL-1001 and PORTAL-1050 history",
+      "severity": "high",
+      "sourceAgent": "Opposer",
+      "evidence": "Auth-core has caused overruns in 3 separate tickets (PORTAL-1001, PORTAL-1033, PORTAL-1050)"
+    },
+    {
+      "risk": "Partial standalone conversion creates a mixed codebase (2 standalone modules + 20 NgModule modules) that is harder to reason about than a fully consistent approach",
+      "severity": "low",
+      "sourceAgent": "Researcher",
+      "evidence": "Angular 17 fully supports mixed mode; this is architectural messiness, not a functional risk"
+    },
+    {
+      "risk": "Team may lose migration momentum between interim and full phases, making the eventual full migration harder to justify and staff",
+      "severity": "medium",
+      "sourceAgent": "Worst-Case",
+      "evidence": "Organizational pattern: 'phase 2' migrations often deprioritized in favour of feature work"
+    }
+  ],
+  "debateLog": [
+    {
+      "round": 1,
+      "agent": "Researcher",
+      "position": "advocate",
+      "argument": "The interim path is the risk-rational choice given the data. A single major version jump (16→17) has a well-documented, battle-tested upgrade path. Converting only auth-core and payments to standalone targets the two modules with the highest overrun history and the most critical circular dependency, delivering the highest-value structural improvement per engineering hour. The smaller team (3.5 FTEs) and shorter timeline mean the feature freeze is 6-8 weeks rather than 16+, staying within the organization's demonstrated tolerance. Angular 17 LTS provides an 18-month runway to plan the full migration with better data.",
+      "evidenceCited": [
+        "Auth-core: 3 overrun tickets",
+        "Payments: highest label overrun",
+        "Feature freeze tolerance: ~8 weeks",
+        "Angular 17 LTS: 18 months"
+      ]
+    },
+    {
+      "round": 1,
+      "agent": "Opposer",
+      "position": "challenger",
+      "argument": "The interim path is a tactical retreat that creates a false sense of progress. After spending ~₹5M and 8 weeks, the codebase is still on a framework that will need another upgrade within 18 months. The 20 remaining NgModules continue to drag velocity on every ticket. The team will have done the hardest part of the migration (auth-core untangling) but stopped before capturing the performance benefits of Signals and zoneless mode that justify the investment to the business. The full migration, while riskier, at least offers a complete outcome.",
+      "evidenceCited": [
+        "20 NgModules remaining",
+        "No Signals/zoneless benefit captured",
+        "Angular 17 LTS expiry timeline"
+      ]
+    },
+    {
+      "round": 1,
+      "agent": "Worst-Case",
+      "position": "pessimist",
+      "argument": "In the worst case for the interim path, the auth-core standalone conversion still hits the circular dependency wall, overrunning by 1.9x (consistent with auth-label history). The 8-week timeline stretches to 11-12 weeks, the feature freeze starts to bite, and the deliverable is a partially-converted Angular 17 codebase that the business views as incomplete. The worst case here is still significantly better than the worst case for the full migration: ₹6.5M exposure vs ₹13M+, and the codebase is in a consistent (if suboptimal) state rather than a half-migrated one.",
+      "evidenceCited": [
+        "Auth label overrun: 1.93x",
+        "Worst-case cost: ₹6.5M vs ₹13M+"
+      ]
+    },
+    {
+      "round": 2,
+      "agent": "Researcher",
+      "position": "advocate",
+      "argument": "The Opposer correctly identifies that the interim path defers the full modernisation benefit. But the data supports a staged approach: the team's migration overrun pattern (2.3x, flat across 8 sprints) means they have not yet developed the estimation discipline or tooling to execute a 340-point migration reliably. The interim path is a learning opportunity: if the team can deliver the 145-point scope within 1.5x of estimate, that data point justifies confidence in the full migration. If they can't, it proves the full migration would have been worse.",
+      "evidenceCited": [
+        "Base effort: 145 pts (interim) vs 340 pts (full)",
+        "Migration overrun: 2.3x flat trend"
+      ]
+    },
+    {
+      "round": 2,
+      "agent": "Opposer",
+      "position": "challenger",
+      "argument": "The Researcher's 'learning opportunity' framing is reasonable but optimistic. The team has had 8 sprints of migration work and the overrun pattern has not improved. There is no evidence that doing a smaller migration will teach them something that 60 tickets of migration work did not. The strongest argument for interim remains the simpler one: it caps downside risk and delivers a guaranteed Angular 17 codebase, which is a defensible business outcome even if the full migration never happens.",
+      "evidenceCited": [
+        "8 sprints of flat overrun trend",
+        "No evidence of estimation improvement"
+      ]
+    },
+    {
+      "round": 2,
+      "agent": "Worst-Case",
+      "position": "pessimist",
+      "argument": "The realistic worst case for the interim path is a 12-week timeline at ₹6.5M with a functional Angular 17 codebase. That is a known, bounded outcome. The organizational risk is that 'phase 2' of the migration gets deprioritized — this has happened before in this org — leaving the codebase on Angular 17 until LTS expiry forces another upgrade under pressure. Decision-makers should plan for this: if the interim path is chosen, the full migration should be committed to in the next planning cycle, not left as an open item.",
+      "evidenceCited": [
+        "Organizational pattern: deferred 'phase 2' migrations",
+        "Angular 17 LTS expiry"
+      ]
+    }
+  ],
+  "synthesizerSummary": "The interim path offers a high-confidence, bounded outcome at roughly 40% of the full migration's cost and risk. The frictionFactor of 1.45 reflects the simpler scope (single version jump, targeted module conversion) partially offset by the persistent auth-core complexity. The 0.81 confidence score reflects the well-understood upgrade path and the smaller blast radius. The primary trade-off is deferred technical debt: 20 NgModules remain legacy, and a second migration cycle will be needed within 18 months. Decision-makers should treat this as a risk-buying decision: the interim path buys 18 months of runway at lower cost, but only if the full migration is committed to before Angular 17 LTS expiry."
+}

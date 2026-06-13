@@ -1,0 +1,225 @@
+{
+  "_meta": {
+    "source": "gemini-1.5-flash",
+    "prompt": "Analyze HRMS employee records for skill coverage, team composition, and migration-readiness from a people perspective.",
+    "cachedAt": "2026-06-10T12:10:00Z",
+    "ttlHours": 24,
+    "cacheKey": "ai-ingestion-hrms-vectorfin"
+  },
+  "skillCoverageMatrix": {
+    "Angular": {
+      "totalWithSkill": 10,
+      "proficiencyDistribution": {
+        "level5": 2,
+        "level4": 3,
+        "level3": 2,
+        "level2": 3
+      },
+      "averageProficiency": 3.4,
+      "coverageForMigration": "adequate"
+    },
+    "TypeScript": {
+      "totalWithSkill": 12,
+      "proficiencyDistribution": {
+        "level5": 2,
+        "level4": 4,
+        "level3": 4,
+        "level2": 2
+      },
+      "averageProficiency": 3.67,
+      "coverageForMigration": "strong"
+    },
+    "Angular Signals (v17+)": {
+      "totalWithSkill": 2,
+      "proficiencyDistribution": {
+        "level4": 2
+      },
+      "averageProficiency": 4,
+      "coverageForMigration": "critical_gap",
+      "note": "Only DEV_01 and DEV_03 have hands-on Signals experience. Full migration scenario requires upskilling 5+ additional developers."
+    },
+    "RxJS": {
+      "totalWithSkill": 3,
+      "proficiencyDistribution": {
+        "level4": 1,
+        "level3": 1,
+        "level2": 1
+      },
+      "averageProficiency": 3,
+      "coverageForMigration": "moderate"
+    },
+    "Architecture": {
+      "totalWithSkill": 2,
+      "proficiencyDistribution": {
+        "level4": 2
+      },
+      "averageProficiency": 4,
+      "coverageForMigration": "adequate_for_planning"
+    },
+    "CSS/Theming": {
+      "totalWithSkill": 1,
+      "proficiencyDistribution": {
+        "level4": 1
+      },
+      "averageProficiency": 4,
+      "coverageForMigration": "single_point_of_failure"
+    },
+    "Build tooling": {
+      "totalWithSkill": 1,
+      "proficiencyDistribution": {
+        "level3": 1
+      },
+      "averageProficiency": 3,
+      "coverageForMigration": "single_point_of_failure"
+    },
+    "Payments domain": {
+      "totalWithSkill": 1,
+      "proficiencyDistribution": {
+        "level4": 1
+      },
+      "averageProficiency": 4,
+      "coverageForMigration": "single_point_of_failure"
+    }
+  },
+  "teamComposition": {
+    "totalHeadcount": 12,
+    "frontendEngineers": 7,
+    "backendEngineers": 2,
+    "qaEngineers": 1,
+    "managers": 1,
+    "juniors": 2,
+    "seniorRatio": 0.42,
+    "averageTenureYears": 3.67,
+    "availableForMigration": {
+      "fullTime": [
+        "DEV_01",
+        "DEV_02",
+        "DEV_04",
+        "DEV_05",
+        "DEV_06",
+        "DEV_12"
+      ],
+      "partialTime": [
+        {
+          "pseudonym": "DEV_03",
+          "availablePercent": 80
+        },
+        {
+          "pseudonym": "DEV_07",
+          "availablePercent": 40
+        },
+        {
+          "pseudonym": "DEV_11",
+          "availablePercent": 50
+        }
+      ],
+      "notAvailable": [
+        "DEV_08",
+        "DEV_09",
+        "DEV_10"
+      ]
+    }
+  },
+  "migrationTeamRecommendation": {
+    "fullMigration": {
+      "requiredFTEs": 6.5,
+      "recommendedTeam": [
+        {
+          "pseudonym": "DEV_03",
+          "role": "Tech Lead / Architect",
+          "allocation": 80,
+          "rationale": "Highest commit count, owns core/ and shared/, Signals experience, architecture skill"
+        },
+        {
+          "pseudonym": "DEV_01",
+          "role": "Senior Migration Engineer",
+          "allocation": 100,
+          "rationale": "Auth-domain expert, migration execution track record, Signals experience"
+        },
+        {
+          "pseudonym": "DEV_07",
+          "role": "Build/Tooling Engineer",
+          "allocation": 100,
+          "rationale": "Owns angular.json and build pipeline, CLI migration experience (PORTAL-1048)"
+        },
+        {
+          "pseudonym": "DEV_02",
+          "role": "Migration Engineer",
+          "allocation": 100,
+          "rationale": "Strong Angular/TS skills, RxJS migration experience"
+        },
+        {
+          "pseudonym": "DEV_04",
+          "role": "Payments Module Specialist",
+          "allocation": 100,
+          "rationale": "Only payments-domain expert, required for payments standalone conversion"
+        },
+        {
+          "pseudonym": "DEV_05",
+          "role": "Migration Engineer",
+          "allocation": 100,
+          "rationale": "Code splitting experience, notifications/support-chat module owner"
+        },
+        {
+          "pseudonym": "DEV_06",
+          "role": "Theming / i18n Migration",
+          "allocation": 50,
+          "rationale": "CSS/theming single point of failure — needed for dark mode and style migration"
+        }
+      ],
+      "totalMonthlyCost": 2125000
+    },
+    "interimUpgrade": {
+      "requiredFTEs": 3.5,
+      "recommendedTeam": [
+        {
+          "pseudonym": "DEV_03",
+          "role": "Tech Lead",
+          "allocation": 60,
+          "rationale": "Architecture oversight for auth-core standalone conversion"
+        },
+        {
+          "pseudonym": "DEV_01",
+          "role": "Auth Migration Lead",
+          "allocation": 100,
+          "rationale": "Auth-domain expert, direct owner of the auth-core refactors"
+        },
+        {
+          "pseudonym": "DEV_07",
+          "role": "Build/CLI Upgrade",
+          "allocation": 80,
+          "rationale": "Angular CLI 16→17 upgrade, build config migration"
+        },
+        {
+          "pseudonym": "DEV_04",
+          "role": "Payments Standalone",
+          "allocation": 80,
+          "rationale": "Payments module standalone conversion"
+        }
+      ],
+      "totalMonthlyCost": 1268000
+    }
+  },
+  "riskFlags": [
+    {
+      "risk": "Signals knowledge concentrated in 2 people",
+      "severity": "high",
+      "mitigation": "Pair programming / knowledge-transfer sprints before full migration begins"
+    },
+    {
+      "risk": "CSS/Theming single point of failure (DEV_06)",
+      "severity": "medium",
+      "mitigation": "Document theming architecture, cross-train DEV_12 on SCSS patterns"
+    },
+    {
+      "risk": "Build tooling single point of failure (DEV_07)",
+      "severity": "medium",
+      "mitigation": "Document build pipeline, pair with DEV_01 on angular.json changes"
+    },
+    {
+      "risk": "Backend engineers (DEV_08, DEV_09) have stale Angular skills",
+      "severity": "low",
+      "mitigation": "Not recommended for migration team; keep on backend duties unless upskilled"
+    }
+  ]
+}
