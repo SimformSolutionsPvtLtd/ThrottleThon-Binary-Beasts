@@ -1,43 +1,53 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
-import { ApiService } from './api.service';
+import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-
-export interface AuthTokens {
-  accessToken: string;
-  refreshToken: string;
-}
-
-const ACCESS_KEY = 'ss_access';
-const REFRESH_KEY = 'ss_refresh';
+import { ApiService } from './api.service';
+import { User } from '../models/auth.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly api = inject(ApiService);
-  readonly accessToken = signal<string | null>(localStorage.getItem(ACCESS_KEY));
-  readonly refreshToken = signal<string | null>(localStorage.getItem(REFRESH_KEY));
-  readonly isAuthenticated = computed(() => !!this.accessToken());
+  private readonly router = inject(Router);
 
-  async login(email: string, password: string): Promise<void> {
-    const { data } = await firstValueFrom(
-      this.api.post<{ data: AuthTokens }, { email: string; password: string }>('/auth/login', {
-        email,
-        password,
-      }),
-    );
-    this.setTokens(data);
+  readonly currentUser = signal<User | null>(null);
+  readonly accessToken = signal<string | null>(null);
+  readonly refreshTokenStr = signal<string | null>(null);
+
+  readonly isAuthenticated = computed(() => !!this.currentUser());
+  readonly userRole = computed(() => this.currentUser()?.roleName ?? null);
+  readonly userPermissions = computed(() => this.currentUser()?.permissions ?? []);
+  readonly tenantId = computed(() => this.currentUser()?.tenantId ?? null);
+  readonly tenantSlug = computed(() => this.currentUser()?.tenantSlug ?? null);
+
+  async login(email: string, password: string, tenantSlug: string): Promise<User> {
+    const res = await firstValueFrom(this.api.login({ email, password, tenantSlug }));
+    const { accessToken, refreshToken, user } = res.data;
+    this.accessToken.set(accessToken);
+    this.refreshTokenStr.set(refreshToken);
+    this.currentUser.set(user);
+    return user;
   }
 
   logout(): void {
+    this.currentUser.set(null);
     this.accessToken.set(null);
-    this.refreshToken.set(null);
-    localStorage.removeItem(ACCESS_KEY);
-    localStorage.removeItem(REFRESH_KEY);
+    this.refreshTokenStr.set(null);
+    this.router.navigate(['/auth/login']);
   }
 
-  private setTokens(t: AuthTokens): void {
-    this.accessToken.set(t.accessToken);
-    this.refreshToken.set(t.refreshToken);
-    localStorage.setItem(ACCESS_KEY, t.accessToken);
-    localStorage.setItem(REFRESH_KEY, t.refreshToken);
+  async refreshAccessToken(): Promise<void> {
+    const token = this.refreshTokenStr();
+    if (!token) throw new Error('No refresh token');
+    const res = await firstValueFrom(this.api.refreshToken(token));
+    this.accessToken.set(res.data.accessToken);
+  }
+
+  hasPermission(perm: string): boolean {
+    return this.userPermissions().includes(perm);
+  }
+
+  hasAnyPermission(...perms: string[]): boolean {
+    const userPerms = this.userPermissions();
+    return perms.some(p => userPerms.includes(p));
   }
 }
