@@ -11,6 +11,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService } from '../../core/services/auth.service';
 import { TenantBrandingService } from '../../core/services/tenant-branding.service';
+import { ForecastStateService } from '../../core/services/forecast-state.service';
 
 @Component({
   selector: 'ss-dashboard-layout',
@@ -157,8 +158,9 @@ export class DashboardLayoutComponent {
   readonly branding = inject(TenantBrandingService);
   private readonly route = inject(ActivatedRoute);
 
+  readonly forecastState = inject(ForecastStateService);
   readonly collapsed = signal(false);
-  readonly showRealNames = signal(false);
+  readonly showRealNames = this.forecastState.showRealNames;
   readonly viewportTooSmall = signal(window.innerWidth < 1280);
 
   @HostListener('window:resize')
@@ -192,6 +194,6 @@ export class DashboardLayoutComponent {
   });
 
   onRealNamesToggle(_checked: boolean): void {
-    this.showRealNames.set(_checked);
+    this.forecastState.showRealNames.set(_checked);
   }
 }
