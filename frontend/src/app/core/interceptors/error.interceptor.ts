@@ -4,13 +4,17 @@ import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { catchError, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
+import { SKIP_ERROR_TOAST } from './http-context';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const auth = inject(AuthService);
   const snackBar = inject(MatSnackBar);
 
-  const show = (msg: string) => snackBar.open(msg, 'Dismiss', { duration: 4000 });
+  const silent = req.context.get(SKIP_ERROR_TOAST);
+  const show = (msg: string) => {
+    if (!silent) snackBar.open(msg, 'Dismiss', { duration: 4000 });
+  };
 
   return next(req).pipe(
     catchError(err => {
