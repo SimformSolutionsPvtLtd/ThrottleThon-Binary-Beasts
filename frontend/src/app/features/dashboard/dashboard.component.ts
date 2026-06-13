@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 import { ApiService } from '../../core/services/api.service';
 import { ForecastStateService } from '../../core/services/forecast-state.service';
 import { ParameterSlidersComponent } from './components/parameter-sliders/parameter-sliders.component';
@@ -13,6 +14,7 @@ import { FinancialChartComponent } from './components/financial-chart/financial-
 import { DataStatusBarComponent } from './components/data-status-bar/data-status-bar.component';
 import { DebateLoadingComponent } from './components/debate-loading/debate-loading.component';
 import { DebateTimelineComponent } from '../debate/debate-timeline/debate-timeline.component';
+import { ErrorBoundaryComponent } from '../../shared/components/error-boundary.component';
 
 @Component({
   selector: 'ss-dashboard',
@@ -29,6 +31,7 @@ import { DebateTimelineComponent } from '../debate/debate-timeline/debate-timeli
     DataStatusBarComponent,
     DebateLoadingComponent,
     DebateTimelineComponent,
+    ErrorBoundaryComponent,
   ],
   template: `
     <div class="space-y-6">
@@ -113,7 +116,9 @@ import { DebateTimelineComponent } from '../debate/debate-timeline/debate-timeli
       </div>
 
       <!-- Financial Chart -->
-      <ss-financial-chart />
+      <ss-error-boundary label="The financial chart failed to render.">
+        <ss-financial-chart />
+      </ss-error-boundary>
 
       <!-- AI Risk Analysis -->
       <div class="bg-surface-raised rounded-xl p-6">
@@ -122,21 +127,35 @@ import { DebateTimelineComponent } from '../debate/debate-timeline/debate-timeli
             <mat-icon class="text-brand-accent">psychology</mat-icon>
             AI Risk Analysis
           </h3>
-          <button
-            mat-raised-button
-            class="debate-btn"
-            [disabled]="state.isDebateLoading() || state.activeScenarioIds().length === 0"
-            (click)="runDebate()"
-          >
-            <mat-icon>psychology</mat-icon>
-            Run AI Debate
-          </button>
+          <div class="flex items-center gap-2">
+            <button
+              mat-stroked-button
+              class="text-content"
+              [disabled]="state.activeScenarioIds().length === 0"
+              (click)="generateBrief()"
+              matTooltip="Open a print-ready executive brief for the first selected scenario"
+            >
+              <mat-icon>description</mat-icon>
+              Generate Brief
+            </button>
+            <button
+              mat-raised-button
+              class="debate-btn"
+              [disabled]="state.isDebateLoading() || state.activeScenarioIds().length === 0"
+              (click)="runDebate()"
+            >
+              <mat-icon>psychology</mat-icon>
+              Run AI Debate
+            </button>
+          </div>
         </div>
 
         @if (state.isDebateLoading()) {
           <ss-debate-loading />
         } @else {
-          <ss-debate-timeline [scenarioExternalId]="state.activeScenarioIds()[0]" />
+          <ss-error-boundary label="The debate timeline failed to render.">
+            <ss-debate-timeline [scenarioExternalId]="state.activeScenarioIds()[0]" />
+          </ss-error-boundary>
         }
       </div>
 
@@ -168,6 +187,7 @@ export class DashboardComponent implements OnInit {
   readonly state = inject(ForecastStateService);
   private readonly api = inject(ApiService);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly router = inject(Router);
 
   readonly isLoadingScenarios = computed(() => this.state.allScenarios().length === 0);
 
@@ -200,6 +220,12 @@ export class DashboardComponent implements OnInit {
   }
 
   // ── AI Debate ───────────────────────────────────────────────────────────────
+
+  generateBrief(): void {
+    const first = this.state.activeScenarioIds()[0];
+    if (!first) return;
+    this.router.navigate(['/brief', first]);
+  }
 
   runDebate(): void {
     const ids = this.state.activeScenarioIds();

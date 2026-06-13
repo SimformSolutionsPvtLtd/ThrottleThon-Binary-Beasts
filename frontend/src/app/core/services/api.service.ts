@@ -3,7 +3,15 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { skipErrorToast } from '../interceptors/http-context';
 import { Observable } from 'rxjs';
 import { LoginRequest, LoginResponse, User } from '../models/auth.model';
-import { TenantBranding, TenantMembership } from '../models/tenant.model';
+import {
+  TenantBranding,
+  TenantMembership,
+  TenantDetail,
+  UpdateTenantRequest,
+  TenantMember,
+  AddMemberRequest,
+  AuditLogPage,
+} from '../models/tenant.model';
 import { DataStatus } from '../models/data-status.model';
 import { Scenario } from '../models/scenario.model';
 import { Developer, Allocation } from '../models/developer.model';
@@ -72,7 +80,7 @@ export class ApiService {
   }
 
   updateScenario(externalId: string, data: Partial<Scenario>): Observable<Scenario> {
-    return this.http.put<Scenario>(this.url(`/api/v1/scenarios/${externalId}`), data);
+    return this.http.patch<Scenario>(this.url(`/api/v1/scenarios/${externalId}`), data);
   }
 
   // Developers
@@ -160,37 +168,39 @@ export class ApiService {
     return this.http.get<TenantBranding>(this.url('/api/v1/tenants/branding'), { params });
   }
 
-  getCurrentTenant(): Observable<unknown> {
-    return this.http.get<unknown>(this.url('/api/v1/tenants/current'));
+  getCurrentTenant(): Observable<TenantDetail> {
+    return this.http.get<TenantDetail>(this.url('/api/v1/tenants/current'));
   }
 
-  updateTenant(data: unknown): Observable<unknown> {
-    return this.http.put<unknown>(this.url('/api/v1/tenants/current'), data);
+  updateTenant(data: UpdateTenantRequest): Observable<TenantDetail> {
+    return this.http.patch<TenantDetail>(this.url('/api/v1/tenants/current'), data);
   }
 
-  getMembers(): Observable<unknown[]> {
-    return this.http.get<unknown[]>(this.url('/api/v1/tenants/members'));
+  getMembers(): Observable<TenantMember[]> {
+    return this.http.get<TenantMember[]>(this.url('/api/v1/tenants/current/members'));
   }
 
-  addMember(data: unknown): Observable<unknown> {
-    return this.http.post<unknown>(this.url('/api/v1/tenants/members'), data);
+  addMember(data: AddMemberRequest): Observable<unknown> {
+    return this.http.post<unknown>(this.url('/api/v1/tenants/current/members'), data);
   }
 
-  updateMemberRole(userId: string, roleId: string): Observable<unknown> {
-    return this.http.put<unknown>(this.url(`/api/v1/tenants/members/${userId}/role`), { roleId });
+  updateMemberRole(userId: string, roleName: string): Observable<unknown> {
+    return this.http.patch<unknown>(this.url(`/api/v1/tenants/current/members/${userId}`), { roleName });
   }
 
-  removeMember(userId: string): Observable<void> {
-    return this.http.delete<void>(this.url(`/api/v1/tenants/members/${userId}`));
+  removeMember(userId: string): Observable<{ success: boolean }> {
+    return this.http.delete<{ success: boolean }>(this.url(`/api/v1/tenants/current/members/${userId}`));
   }
 
   // Audit Logs
-  getAuditLogs(filters?: Record<string, string>): Observable<unknown[]> {
+  getAuditLogs(filters?: Record<string, string>): Observable<AuditLogPage> {
     let params = new HttpParams();
     if (filters) {
-      Object.entries(filters).forEach(([k, v]) => { params = params.set(k, v); });
+      Object.entries(filters).forEach(([k, v]) => {
+        if (v !== undefined && v !== null && v !== '') params = params.set(k, v);
+      });
     }
-    return this.http.get<unknown[]>(this.url('/api/v1/audit-logs'), { params });
+    return this.http.get<AuditLogPage>(this.url('/api/v1/audit-logs'), { params });
   }
 
   // Health
