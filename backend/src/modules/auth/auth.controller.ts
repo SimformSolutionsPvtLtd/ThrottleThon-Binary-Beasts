@@ -1,12 +1,12 @@
-import { Body, Controller, HttpCode, Post, Req, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
-import { Request } from 'express';
+import { Body, Controller, Get, HttpCode, Post } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
+import { RefreshDto } from './dto/refresh.dto';
 import { Public } from '../../common/decorators/public.decorator';
-import { CurrentUser, AuthUser } from '../../common/decorators/current-user.decorator';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { AuthUser } from '../../common/types/auth-user';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -16,22 +16,31 @@ export class AuthController {
   @Public()
   @Post('login')
   @HttpCode(200)
+  @ApiOperation({ summary: 'Authenticate user against a tenant' })
+  @ApiResponse({ status: 200, description: 'Returns tokens, user, and tenant branding' })
   login(@Body() dto: LoginDto) {
-    return this.auth.login(dto.email, dto.password);
+    return this.auth.login(dto.email, dto.password, dto.tenantSlug);
   }
 
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt-refresh'))
+  @Public()
   @Post('refresh')
   @HttpCode(200)
-  refresh(@Req() req: Request & { user: { sub: string; refreshToken: string } }) {
-    return this.auth.refresh(req.user.sub, req.user.refreshToken);
+  @ApiOperation({ summary: 'Exchange a refresh token for a new token pair' })
+  refresh(@Body() dto: RefreshDto) {
+    return this.auth.refresh(dto.refreshToken);
   }
 
   @ApiBearerAuth()
-  @Post('logout')
-  @HttpCode(204)
-  logout(@CurrentUser() user: AuthUser) {
-    return this.auth.logout(user.id);
+  @Get('me')
+  @ApiOperation({ summary: 'Get current user profile (with permissions and tenant)' })
+  me(@CurrentUser() user: AuthUser) {
+    return this.auth.getProfile(user.sub, user.tenantId);
+  }
+
+  @ApiBearerAuth()
+  @Get('tenants')
+  @ApiOperation({ summary: 'List tenants the current user belongs to' })
+  tenants(@CurrentUser() user: AuthUser) {
+    return this.auth.getUserTenants(user.sub);
   }
 }

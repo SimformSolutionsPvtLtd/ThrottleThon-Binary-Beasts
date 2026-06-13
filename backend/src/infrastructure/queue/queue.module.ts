@@ -3,20 +3,18 @@ import { BullModule } from '@nestjs/bullmq';
 
 export const QUEUES = {
   AI: 'ai',
+  INGESTION: 'ingestion',
   DEBATE: 'debate',
   FORECAST: 'forecast',
-  REPORTS: 'reports',
-  INTEGRATIONS: 'integrations',
 } as const;
 
 @Module({
   imports: [
     BullModule.registerQueue(
       { name: QUEUES.AI },
+      { name: QUEUES.INGESTION },
       { name: QUEUES.DEBATE },
       { name: QUEUES.FORECAST },
-      { name: QUEUES.REPORTS },
-      { name: QUEUES.INTEGRATIONS },
     ),
   ],
   exports: [BullModule],
