@@ -5,6 +5,9 @@ import { Developer, Allocation } from '../models/developer.model';
 
 @Injectable({ providedIn: 'root' })
 export class ForecastStateService {
+  // NOTE: forecast recompute is wired in ParameterSlidersComponent, which reacts
+  // to changes in allocations()/activeScenarioIds()/params via toObservable. Any
+  // mutation of the allocations() signal below propagates to that recompute.
   // Slider parameters
   readonly priorityPressure = signal<number>(1.0);
   readonly scopePercent = signal<number>(100);
@@ -46,4 +49,31 @@ export class ForecastStateService {
     }
     return map;
   });
+
+  /** Sum of allocation percent for a developer across all scenarios. */
+  readonly allocatedPercentByDev = computed(() => {
+    const map = new Map<string, number>();
+    for (const a of this.allocations()) {
+      map.set(a.devPseudonym, (map.get(a.devPseudonym) ?? 0) + a.allocationPercent);
+    }
+    return map;
+  });
+
+  /** Remaining allocatable capacity (0–100) for a developer. */
+  availableForDev(pseudonym: string): number {
+    return Math.max(0, 100 - (this.allocatedPercentByDev().get(pseudonym) ?? 0));
+  }
+
+  /** Developers with remaining capacity (>0%), eligible for the bench column. */
+  readonly benchDevelopers = computed(() => {
+    const allocated = this.allocatedPercentByDev();
+    return this.developers()
+      .map(dev => ({ ...dev, availablePercent: Math.max(0, 100 - (allocated.get(dev.pseudonym) ?? 0)) }))
+      .filter(dev => dev.availablePercent > 0);
+  });
+
+  /** Allocations for a given scenario, newest-relevant order preserved. */
+  allocationsForScenario(scenarioExternalId: string): Allocation[] {
+    return this.allocations().filter(a => a.scenarioExternalId === scenarioExternalId);
+  }
 }
