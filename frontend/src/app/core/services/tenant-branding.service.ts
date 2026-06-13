@@ -12,7 +12,7 @@ export class TenantBrandingService {
   async loadBranding(slug: string): Promise<void> {
     try {
       const res = await firstValueFrom(this.api.getTenantBranding(slug));
-      const b = res.data;
+      const b = res;
       this.branding.set(b);
       this.applyBrandingToDOM(b);
     } catch {

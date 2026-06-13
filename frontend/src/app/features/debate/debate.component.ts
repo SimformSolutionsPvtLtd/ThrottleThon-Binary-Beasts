@@ -4,14 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../../core/services/api.service';
-
-interface DebateResult {
-  id: string;
-  confidenceScore: number;
-  frictionFactor: number;
-  summary: string;
-  risks: Array<{ title: string; severity: string }>;
-}
+import { DebateResult } from '../../core/models/debate.model';
 
 @Component({
   selector: 'ss-debate',
@@ -29,11 +22,10 @@ interface DebateResult {
       <mat-card class="mt-4 p-4">
         <div class="font-semibold">Confidence: {{ (r.confidenceScore * 100).toFixed(1) }}%</div>
         <div>Friction: {{ (r.frictionFactor * 100).toFixed(1) }}%</div>
-        <p class="mt-2">{{ r.summary }}</p>
-        @if (r.risks?.length) {
+        @if (r.keyRisks?.length) {
           <ul class="list-disc ml-6 mt-2">
-            @for (risk of r.risks; track risk.title) {
-              <li>{{ risk.title }} ({{ risk.severity }})</li>
+            @for (risk of r.keyRisks; track risk.risk) {
+              <li>{{ risk.risk }} ({{ risk.severity }})</li>
             }
           </ul>
         }
@@ -49,15 +41,11 @@ export class DebateComponent {
   async run() {
     this.loading.set(true);
     try {
-      const scenarios = await firstValueFrom(
-        this.api.get<{ data: Array<{ id: string }> }>('/scenarios'),
-      );
-      const scenarioId = scenarios.data[0]?.id;
-      if (!scenarioId) return;
-      const res = await firstValueFrom(
-        this.api.post<{ data: DebateResult }, { scenarioId: string }>('/debate', { scenarioId }),
-      );
-      this.result.set(res.data);
+      const scenarios = await firstValueFrom(this.api.getScenarios());
+      const scenarioExternalId = scenarios[0]?.externalId;
+      if (!scenarioExternalId) return;
+      const results = await firstValueFrom(this.api.runDebate([scenarioExternalId]));
+      this.result.set(results[0] ?? null);
     } finally {
       this.loading.set(false);
     }
