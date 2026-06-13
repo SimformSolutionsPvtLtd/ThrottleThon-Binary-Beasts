@@ -5,11 +5,12 @@ import { ApiService } from '../../core/services/api.service';
 import { ForecastStateService } from '../../core/services/forecast-state.service';
 import { DataStatusBarComponent } from './components/data-status-bar/data-status-bar.component';
 import { ScenarioCardComponent } from './components/scenario-card/scenario-card.component';
+import { AllocationBoardComponent } from '../allocations/allocation-board/allocation-board.component';
 
 @Component({
   selector: 'ss-dashboard',
   standalone: true,
-  imports: [CommonModule, DataStatusBarComponent, ScenarioCardComponent],
+  imports: [CommonModule, DataStatusBarComponent, ScenarioCardComponent, AllocationBoardComponent],
   template: `
     @if (loading()) {
       <!-- Full-page skeleton -->
@@ -72,10 +73,8 @@ import { ScenarioCardComponent } from './components/scenario-card/scenario-card.
           Financial Chart — Phase 2
         </div>
 
-        <!-- Row 5: Allocation Board (Phase 3 placeholder) -->
-        <div class="bg-surface-raised rounded-xl p-4 border border-dashed border-surface-overlay text-center text-content-muted text-sm">
-          Allocation Board — Phase 3
-        </div>
+        <!-- Row 5: Allocation Board -->
+        <ss-allocation-board />
 
         <!-- Row 6: Debate Timeline (Phase 4 placeholder) -->
         <div class="bg-surface-raised rounded-xl p-4 border border-dashed border-surface-overlay text-center text-content-muted text-sm">
@@ -98,19 +97,19 @@ export class DashboardComponent implements OnInit {
       allocations: this.api.getAllocations(),
     }).subscribe({
       next: ({ status, scenarios, developers, allocations }) => {
-        this.forecastState.dataStatus.set(status.data);
-        this.forecastState.scenarios.set(scenarios.data);
-        this.forecastState.developers.set(developers.data);
-        this.forecastState.allocations.set(allocations.data);
+        this.forecastState.dataStatus.set(status);
+        this.forecastState.scenarios.set(scenarios);
+        this.forecastState.developers.set(developers);
+        this.forecastState.allocations.set(allocations);
 
         // Auto-select first 2 scenarios
-        const first2 = scenarios.data.slice(0, 2).map(s => s.externalId);
+        const first2 = scenarios.slice(0, 2).map(s => s.externalId);
         this.forecastState.activeScenarioIds.set(first2);
 
         this.loading.set(false);
 
         if (first2.length) {
-          this.runForecast(first2, allocations.data);
+          this.runForecast(first2, allocations);
         }
       },
       error: () => {
@@ -129,8 +128,8 @@ export class DashboardComponent implements OnInit {
       allocations,
     }).subscribe({
       next: (res) => {
-        this.forecastState.forecastResults.set(res.data.results);
-        this.forecastState.winner.set(res.data.winner);
+        this.forecastState.forecastResults.set(res.results);
+        this.forecastState.winner.set(res.winner);
         this.forecastState.isForecastLoading.set(false);
       },
       error: () => {

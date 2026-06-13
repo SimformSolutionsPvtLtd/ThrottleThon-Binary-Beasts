@@ -170,8 +170,8 @@ export class DevelopersListComponent implements OnInit, AfterViewInit {
       this.dataSource.data = cached;
     } else {
       this.api.getDevelopers().subscribe(res => {
-        this.forecastState.developers.set(res.data);
-        this.dataSource.data = res.data;
+        this.forecastState.developers.set(res);
+        this.dataSource.data = res;
         this.attachSortAndPaginator();
       });
     }
