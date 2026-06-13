@@ -21,7 +21,7 @@ export class AuthService {
 
   async login(email: string, password: string, tenantSlug: string): Promise<User> {
     const res = await firstValueFrom(this.api.login({ email, password, tenantSlug }));
-    const { accessToken, refreshToken, user } = res.data;
+    const { accessToken, refreshToken, user } = res;
     this.accessToken.set(accessToken);
     this.refreshTokenStr.set(refreshToken);
     this.currentUser.set(user);
@@ -39,7 +39,7 @@ export class AuthService {
     const token = this.refreshTokenStr();
     if (!token) throw new Error('No refresh token');
     const res = await firstValueFrom(this.api.refreshToken(token));
-    this.accessToken.set(res.data.accessToken);
+    this.accessToken.set(res.accessToken);
   }
 
   hasPermission(perm: string): boolean {

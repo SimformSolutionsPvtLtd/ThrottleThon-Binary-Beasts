@@ -1,9 +1,3 @@
-export interface ApiEnvelope<T> {
-  success: boolean;
-  data: T;
-  timestamp: string;
-}
-
 export interface Project {
   id: string;
   name: string;
