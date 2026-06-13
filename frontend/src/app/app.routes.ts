@@ -20,7 +20,7 @@ export const APP_ROUTES: Routes = [
       { path: 'dashboard', loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent), data: { title: 'Dashboard' } },
       { path: 'scenarios', loadComponent: () => import('./features/scenarios/scenarios-list/scenarios-list.component').then(m => m.ScenariosListComponent), data: { title: 'Scenarios' } },
       { path: 'developers', loadComponent: () => import('./features/developers/developers-list/developers-list.component').then(m => m.DevelopersListComponent), data: { title: 'Developers' } },
-      { path: 'allocations', loadComponent: () => import('./features/allocations/allocation-board/allocation-board.component').then(m => m.AllocationBoardComponent), data: { title: 'Allocations' } },
+      { path: 'allocations', loadComponent: () => import('./features/dashboard/components/allocation-board/allocation-board.component').then(m => m.AllocationBoardComponent), data: { title: 'Allocations' } },
       { path: 'debate/:scenarioExternalId', loadComponent: () => import('./features/debate/debate-timeline/debate-timeline.component').then(m => m.DebateTimelineComponent), data: { title: 'Debate' } },
       { path: 'brief/:scenarioExternalId', loadComponent: () => import('./features/brief/brief.component').then(m => m.BriefComponent), data: { title: 'Brief' } },
       {
