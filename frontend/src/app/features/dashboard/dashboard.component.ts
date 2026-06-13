@@ -1,145 +1,162 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { forkJoin } from 'rxjs';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ApiService } from '../../core/services/api.service';
 import { ForecastStateService } from '../../core/services/forecast-state.service';
-import { DataStatusBarComponent } from './components/data-status-bar/data-status-bar.component';
+import { ParameterSlidersComponent } from './components/parameter-sliders/parameter-sliders.component';
 import { ScenarioCardComponent } from './components/scenario-card/scenario-card.component';
+import { FinancialChartComponent } from './components/financial-chart/financial-chart.component';
 
 @Component({
   selector: 'ss-dashboard',
   standalone: true,
-  imports: [CommonModule, DataStatusBarComponent, ScenarioCardComponent],
+  imports: [
+    CommonModule,
+    MatChipsModule,
+    MatIconModule,
+    MatTooltipModule,
+    ParameterSlidersComponent,
+    ScenarioCardComponent,
+    FinancialChartComponent,
+  ],
   template: `
-    @if (loading()) {
-      <!-- Full-page skeleton -->
-      <div class="space-y-4">
-        <!-- Status bar skeleton -->
-        <div class="bg-surface-raised rounded-xl p-4 flex gap-4">
-          @for (i of [1,2,3]; track i) {
-            <div class="flex items-center gap-3 flex-1">
-              <div class="w-6 h-6 rounded bg-surface-overlay animate-pulse"></div>
-              <div class="space-y-1.5 flex-1">
-                <div class="h-3 w-20 rounded bg-surface-overlay animate-pulse"></div>
-                <div class="h-2.5 w-28 rounded bg-surface-overlay animate-pulse"></div>
-              </div>
-            </div>
-          }
-        </div>
-        <!-- Scenario cards skeleton -->
-        <div class="grid grid-cols-2 gap-4">
-          @for (i of [1,2]; track i) {
-            <div class="bg-surface-raised rounded-xl p-6 space-y-4">
-              <div class="h-5 w-40 rounded bg-surface-overlay animate-pulse"></div>
-              <div class="h-3 w-full rounded bg-surface-overlay animate-pulse"></div>
-              <div class="grid grid-cols-2 gap-3">
-                @for (j of [1,2,3,4]; track j) {
-                  <div class="bg-surface rounded-lg p-3">
-                    <div class="h-2.5 w-16 rounded bg-surface-overlay animate-pulse mb-2"></div>
-                    <div class="h-7 w-20 rounded bg-surface-overlay animate-pulse"></div>
-                  </div>
-                }
-              </div>
-            </div>
-          }
-        </div>
-      </div>
-    } @else {
-      <div class="space-y-4">
-        <!-- Row 1: Data Status Bar -->
-        <ss-data-status-bar (refresh)="onRefresh($event)" />
+    <div class="space-y-6">
 
-        <!-- Row 2: Scenario Cards -->
-        @if (forecastState.activeScenarioIds().length) {
-          <div class="grid grid-cols-2 gap-4">
-            @for (id of forecastState.activeScenarioIds(); track id) {
-              <ss-scenario-card [scenarioExternalId]="id" />
+      <!-- Header row -->
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-bold text-content">Forecast Dashboard</h2>
+          <p class="text-sm text-content-muted mt-0.5">Adjust parameters to compare project scenarios in real-time.</p>
+        </div>
+        @if (state.isForecastLoading()) {
+          <div class="flex items-center gap-2 text-xs text-content-muted bg-surface-raised px-3 py-1.5 rounded-full border border-surface-overlay">
+            <span class="h-2 w-2 rounded-full bg-brand-accent animate-pulse inline-block"></span>
+            Computing…
+          </div>
+        }
+      </div>
+
+      <!-- Parameter Sliders -->
+      <ss-parameter-sliders />
+
+      <!-- Scenario Selection -->
+      <div class="bg-surface-raised rounded-xl p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-sm font-semibold text-content-muted uppercase tracking-wide">
+            Scenarios
+            <span class="ml-2 text-xs normal-case font-normal">
+              ({{ state.activeScenarioIds().length }} selected, max 4)
+            </span>
+          </h3>
+          @if (isLoadingScenarios()) {
+            <span class="text-xs text-content-muted">Loading…</span>
+          }
+        </div>
+
+        @if (state.allScenarios().length === 0 && !isLoadingScenarios()) {
+          <p class="text-sm text-content-muted">No scenarios found. Add some in the Scenarios section.</p>
+        }
+
+        <mat-chip-listbox
+          multiple
+          [value]="state.activeScenarioIds()"
+          (change)="onScenarioSelectionChange($event.value)"
+          aria-label="Select scenarios to compare"
+        >
+          @for (scenario of state.allScenarios(); track scenario.externalId) {
+            <mat-chip-option
+              [value]="scenario.externalId"
+              [disabled]="isChipDisabled(scenario.externalId)"
+              class="scenario-chip"
+            >
+              {{ scenario.name }}
+              <span class="text-xs opacity-60 ml-1 capitalize">({{ scenario.category }})</span>
+            </mat-chip-option>
+          }
+        </mat-chip-listbox>
+
+        <!-- Scenario cards grid -->
+        @if (state.activeScenarios().length > 0) {
+          <div class="mt-5 grid gap-4"
+            [class.grid-cols-1]="state.activeScenarios().length === 1"
+            [class.grid-cols-2]="state.activeScenarios().length === 2"
+            [class.grid-cols-3]="state.activeScenarios().length === 3"
+            [class.grid-cols-4]="state.activeScenarios().length >= 4"
+          >
+            @for (scenario of state.activeScenarios(); track scenario.externalId) {
+              <ss-scenario-card
+                [scenario]="scenario"
+                [result]="state.resultsByScenarioId().get(scenario.externalId) ?? null"
+                [winnerInfo]="state.winner()"
+                [isLoading]="state.isForecastLoading()"
+              />
             }
           </div>
-        } @else {
-          <div class="bg-surface-raised rounded-xl p-8 text-center text-content-muted">
-            No scenarios loaded. Check backend connection.
-          </div>
         }
-
-        <!-- Row 3: Parameter Sliders (Phase 2 placeholder) -->
-        <div class="bg-surface-raised rounded-xl p-4 border border-dashed border-surface-overlay text-center text-content-muted text-sm">
-          Parameter Sliders — Phase 2
-        </div>
-
-        <!-- Row 4: Financial Chart (Phase 2 placeholder) -->
-        <div class="bg-surface-raised rounded-xl p-8 border border-dashed border-surface-overlay text-center text-content-muted text-sm">
-          Financial Chart — Phase 2
-        </div>
-
-        <!-- Row 5: Allocation Board (Phase 3 placeholder) -->
-        <div class="bg-surface-raised rounded-xl p-4 border border-dashed border-surface-overlay text-center text-content-muted text-sm">
-          Allocation Board — Phase 3
-        </div>
-
-        <!-- Row 6: Debate Timeline (Phase 4 placeholder) -->
-        <div class="bg-surface-raised rounded-xl p-4 border border-dashed border-surface-overlay text-center text-content-muted text-sm">
-          Debate Timeline — Phase 4
-        </div>
       </div>
-    }
+
+      <!-- Financial Chart -->
+      <ss-financial-chart />
+
+    </div>
   `,
+  styles: [`
+    :host ::ng-deep .scenario-chip.mat-mdc-chip-option--selected {
+      background-color: rgba(37,99,235,0.2) !important;
+      border-color: rgba(37,99,235,0.6) !important;
+      color: var(--brand-accent) !important;
+    }
+    :host ::ng-deep .mat-mdc-chip-option {
+      background-color: var(--surface) !important;
+      border: 1px solid var(--surface-overlay) !important;
+      color: var(--content-muted) !important;
+      transition: all 0.2s ease;
+    }
+    :host ::ng-deep .mat-mdc-chip-option:not([disabled]):hover {
+      border-color: var(--brand-primary) !important;
+      color: var(--content) !important;
+    }
+  `],
 })
 export class DashboardComponent implements OnInit {
+  readonly state = inject(ForecastStateService);
   private readonly api = inject(ApiService);
-  readonly forecastState = inject(ForecastStateService);
-  readonly loading = signal(true);
+
+  readonly isLoadingScenarios = computed(() => this.state.allScenarios().length === 0);
 
   ngOnInit(): void {
-    forkJoin({
-      status: this.api.getStatus(),
-      scenarios: this.api.getScenarios(),
-      developers: this.api.getDevelopers(),
-      allocations: this.api.getAllocations(),
-    }).subscribe({
-      next: ({ status, scenarios, developers, allocations }) => {
-        this.forecastState.dataStatus.set(status.data);
-        this.forecastState.scenarios.set(scenarios.data);
-        this.forecastState.developers.set(developers.data);
-        this.forecastState.allocations.set(allocations.data);
+    this.loadInitialData();
+  }
 
-        // Auto-select first 2 scenarios
-        const first2 = scenarios.data.slice(0, 2).map(s => s.externalId);
-        this.forecastState.activeScenarioIds.set(first2);
-
-        this.loading.set(false);
-
-        if (first2.length) {
-          this.runForecast(first2, allocations.data);
+  private loadInitialData(): void {
+    this.api.getScenarios().subscribe({
+      next: (scenarios) => {
+        this.state.allScenarios.set(scenarios);
+        // Auto-select first 2 active scenarios
+        const active = scenarios.filter(s => s.isActive).slice(0, 2);
+        if (active.length) {
+          this.state.activeScenarioIds.set(active.map(s => s.externalId));
         }
       },
-      error: () => {
-        this.loading.set(false);
-      },
+      error: () => {},
+    });
+
+    this.api.getAllocations().subscribe({
+      next: (allocs) => this.state.allocations.set(allocs),
+      error: () => {},
     });
   }
 
-  private runForecast(scenarioIds: string[], allocations: import('../../core/models/developer.model').Allocation[]): void {
-    this.forecastState.isForecastLoading.set(true);
-    this.api.computeForecast({
-      scenarioIds,
-      priorityPressure: this.forecastState.priorityPressure(),
-      scopePercent: this.forecastState.scopePercent(),
-      contingencyBuffer: this.forecastState.contingencyBuffer(),
-      allocations,
-    }).subscribe({
-      next: (res) => {
-        this.forecastState.forecastResults.set(res.data.results);
-        this.forecastState.winner.set(res.data.winner);
-        this.forecastState.isForecastLoading.set(false);
-      },
-      error: () => {
-        this.forecastState.isForecastLoading.set(false);
-      },
-    });
+  onScenarioSelectionChange(selectedIds: string[]): void {
+    // Enforce max 4
+    const capped = selectedIds.slice(0, 4);
+    this.state.activeScenarioIds.set(capped);
   }
 
-  onRefresh(source: string): void {
-    this.api.triggerIngestion(source).subscribe();
+  isChipDisabled(externalId: string): boolean {
+    const active = this.state.activeScenarioIds();
+    return active.length >= 4 && !active.includes(externalId);
   }
 }
