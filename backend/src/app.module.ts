@@ -9,8 +9,15 @@ import { PrismaModule } from './infrastructure/prisma/prisma.module';
 import { CacheModule } from './infrastructure/cache/cache.module';
 import { QueueModule } from './infrastructure/queue/queue.module';
 
+import { CommonModule } from './common/common.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { TenantModule } from './modules/tenant/tenant.module';
+import { StatusModule } from './modules/status/status.module';
+import { ScenariosModule } from './modules/scenarios/scenarios.module';
+import { DevelopersModule } from './modules/developers/developers.module';
+import { TicketsModule } from './modules/tickets/tickets.module';
+import { GitReposModule } from './modules/git-repos/git-repos.module';
+import { AuditLogsModule } from './modules/audit-logs/audit-logs.module';
 
 import { HealthController } from './common/health/health.controller';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
@@ -29,8 +36,15 @@ import { PermissionsGuard } from './common/guards/permissions.guard';
     PrismaModule,
     CacheModule,
     QueueModule,
+    CommonModule,
     AuthModule,
     TenantModule,
+    StatusModule,
+    ScenariosModule,
+    DevelopersModule,
+    TicketsModule,
+    GitReposModule,
+    AuditLogsModule,
   ],
   controllers: [HealthController],
   providers: [
