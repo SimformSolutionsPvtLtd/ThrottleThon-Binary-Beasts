@@ -20,6 +20,9 @@ import { GitReposModule } from './modules/git-repos/git-repos.module';
 import { AuditLogsModule } from './modules/audit-logs/audit-logs.module';
 import { ForecastModule } from './modules/forecast/forecast.module';
 import { AllocationsModule } from './modules/allocations/allocations.module';
+import { AiModule } from './modules/ai/ai.module';
+import { IngestionModule } from './modules/ingestion/ingestion.module';
+import { DebateModule } from './modules/debate/debate.module';
 
 import { HealthController } from './common/health/health.controller';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
@@ -49,6 +52,9 @@ import { PermissionsGuard } from './common/guards/permissions.guard';
     AuditLogsModule,
     ForecastModule,
     AllocationsModule,
+    AiModule,
+    IngestionModule,
+    DebateModule,
   ],
   controllers: [HealthController],
   providers: [
