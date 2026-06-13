@@ -1,7 +1,7 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { ForecastResult, WinnerInfo } from '../models/forecast.model';
 import { Scenario } from '../models/scenario.model';
-import { Allocation } from '../models/developer.model';
+import { Developer, Allocation } from '../models/developer.model';
 
 @Injectable({ providedIn: 'root' })
 export class ForecastStateService {
@@ -14,6 +14,9 @@ export class ForecastStateService {
   readonly allScenarios = signal<Scenario[]>([]);
   readonly activeScenarioIds = signal<string[]>([]);
 
+  // Developers
+  readonly developers = signal<Developer[]>([]);
+
   // Allocations
   readonly allocations = signal<Allocation[]>([]);
 
@@ -21,6 +24,15 @@ export class ForecastStateService {
   readonly forecastResults = signal<ForecastResult[]>([]);
   readonly winner = signal<WinnerInfo | null>(null);
   readonly isForecastLoading = signal<boolean>(false);
+
+  // Identity / display
+  readonly showRealNames = signal<boolean>(false);
+  readonly identityMap = signal<Record<string, { realName: string; email: string }>>({});
+  readonly resolvedName = computed(() => (pseudonym: string) =>
+    this.showRealNames()
+      ? (this.identityMap()[pseudonym]?.realName ?? pseudonym)
+      : pseudonym
+  );
 
   readonly activeScenarios = computed(() => {
     const ids = this.activeScenarioIds();
